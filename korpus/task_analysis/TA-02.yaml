@@ -1,0 +1,68 @@
+id: TA-02
+jenis: task_analysis
+versi: 2
+status: valid
+validasi:
+  aiken_v: 0.88
+  aiken_v_aspek:
+    relevansi: 1.00
+    kejelasan_langkah: 0.92
+    kesesuaian_kemampuan: 0.83
+    keamanan: 0.75
+  metode: Aiken's V, n = 3 validator, skala 1-5 (lo = 1, c = 5)
+  validator:
+  - Siti Qomariah, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 24 Oktober 2026)
+  - Natalia Damayanti, S.Psi., M.Psi. (Psikolog, Universitas Dinamika Bangsa; lembar 27 Oktober 2026)
+  - Yulinda, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 31 Oktober 2026)
+  tanggal: '2026-10-31'
+  dokumen: Lembar Penilaian Validasi Ahli TA versi 2; rekap Rekap_Aiken_V_Validasi_TA_v2_terisi.xlsx
+  keputusan: Layak digunakan (Siti dan Natalia - dengan revisi sesuai catatan; Yulinda - tanpa revisi). Lembar asli dikonfirmasi diterima promotor 31 Oktober 2026.
+judul: Mencuci tangan dengan sabun
+domain: kemandirian
+level: dasar
+setting: wastafel kelas
+prasyarat: mengikuti instruksi satu langkah
+langkah:
+- nomor: 1
+  tindakan: Membuka keran
+  ujaran: Buka keran.
+  kartu: Tangan memutar keran
+- nomor: 2
+  tindakan: Membasahi tangan
+  ujaran: Basahi tanganmu.
+  kartu: Tangan di bawah air
+- nomor: 3
+  tindakan: Mengambil sabun
+  ujaran: Ambil sabun.
+  kartu: Tangan menekan sabun
+- nomor: 4
+  tindakan: Menggosok telapak tangan
+  ujaran: Gosok telapak tanganmu.
+  kartu: Telapak bergesekan
+- nomor: 5
+  tindakan: Menggosok punggung tangan
+  ujaran: Gosok punggung tanganmu.
+  kartu: Telapak menggosok punggung tangan
+  level_min: menengah
+- nomor: 6
+  tindakan: Menggosok sela jari
+  ujaran: Gosok sela jarimu.
+  kartu: Jari saling menyilang
+  level_min: menengah
+- nomor: 7
+  tindakan: Membilas tangan
+  ujaran: Bilas tanganmu.
+  kartu: Busa dibilas air
+- nomor: 8
+  tindakan: Menutup keran
+  ujaran: Tutup keran.
+  kartu: Tangan menutup keran
+- nomor: 9
+  tindakan: Mengeringkan tangan
+  ujaran: Keringkan tangan dengan [pengering kelas].
+  kartu: Tangan di [pengering kelas]
+catatan: Langkah 5-6 dilatih bertahap; anak level dasar mulai dari langkah 1-4 dan 7-9. [pengering kelas]
+  diisi satu benda dari profil. Perhatikan kepekaan terhadap air, bunyi keran, dan tekstur sabun.
+rujukan:
+- Wardany & Apriyanti (2022), Buku Panduan Guru Pendidikan Khusus bagi Peserta Didik Autis Disertai Hambatan
+  Intelektual, Kemendikbudristek, hlm. 38

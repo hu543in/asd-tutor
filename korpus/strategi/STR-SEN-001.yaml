@@ -1,0 +1,19 @@
+id: STR-SEN-001
+jenis: strategi
+versi: 1
+status: draft
+validasi: {aiken_v: null, validator: [], tanggal: null}
+judul: Menyiapkan transisi aktivitas dengan jadwal bergambar
+domain: regulasi sensori
+level: dasar
+kapan_dipakai: Sebelum anak berpindah dari satu aktivitas ke aktivitas lain, atau saat jadwal berubah.
+isi: >-
+  Transisi yang tidak jelas dapat memicu masalah perilaku. Gunakan jadwal kegiatan bergambar
+  sebagai penanda transisi dan cerita sosial untuk memperkenalkan perubahan rutinitas.
+  Kegiatan yang sudah selesai ditandai pada papan jadwal.
+langkah_tutor:
+  - Jalankan TA-08 (Berpindah aktivitas dengan jadwal visual).
+  - Jika jadwal berubah mendadak, tampilkan perubahan pada papan jadwal sebelum transisi.
+  - Jika status regulasi kuning atau merah, hentikan dan jalankan TA-09.
+rujukan:
+  - Wardany & Apriyanti (2022), Tabel 2.7 hlm. 35; hlm. 44-45

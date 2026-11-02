@@ -1,0 +1,18 @@
+# Tambahkan blok ini ke ~/.hermes/config.yaml di bawah kunci mcp_servers.
+# Ganti /home/ubuntu jika folder home Anda berbeda.
+mcp_servers:
+  asd_rag:
+    command: "/home/ubuntu/asd-rag/venv/bin/python"
+    args: ["/home/ubuntu/asd-rag/server.py"]
+    env:
+      ASD_RAG_HOME: "/home/ubuntu/asd-rag"
+      ASD_RAG_MODE: "dev"        # uji dengan korpus draft; ganti "prod" setelah korpus tervalidasi
+      ASD_RAG_EMBED_MODEL: "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
+      ASD_RAG_T_SEM: "0.52"      # hasil kalibrasi eval_retrieval.py, 27 Okt 2026
+      ASD_RAG_T_KATA: "0.26"
+    timeout: 60
+    connect_timeout: 120         # unduhan model embedding pertama kali bisa lama
+    tools:
+      include: [ambil_task_analysis, cari_strategi, profil_anak, catat_langkah, panggil_guru]
+      prompts: false
+      resources: false

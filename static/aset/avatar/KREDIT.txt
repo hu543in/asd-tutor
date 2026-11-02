@@ -1,0 +1,8 @@
+Model avatar guru.glb
+  Judul   : Teacher_Joe
+  Pembuat : Joe chakrapong (https://sketchfab.com/chakrapong)
+  Sumber  : https://sketchfab.com/3d-models/teacher-joe-c0ec31df2e004e73a3851f060b782a40
+  Lisensi : CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+  Diubah  : material KHR_materials_pbrSpecularGlossiness dikonversi ke metal-roughness
+            (gltf-transform metalrough) agar dapat dimuat three.js; ukuran dan posisi disesuaikan saat dimuat.
+Atribusi wajib dicantumkan di disertasi, artikel, dan aplikasi (Panel guru menampilkannya otomatis).

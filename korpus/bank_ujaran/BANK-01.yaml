@@ -1,0 +1,192 @@
+id: BANK-01
+jenis: bank_ujaran
+versi: 1
+status: draft
+validasi:
+  aiken_v: null
+  validator: []
+  tanggal: null
+judul: Bank ujaran tutor di luar langkah task analysis
+catatan: Kalimat di sini boleh diucapkan tutor hanya setelah bank berstatus valid. Placeholder [ ] diisi dari profil anak; kalimat dengan placeholder kosong tidak boleh diucapkan.
+kategori:
+  pujian: Setelah anak menyelesaikan langkah, terutama secara mandiri.
+  transisi: Sebelum, selama, dan sesudah berpindah aktivitas.
+  menenangkan: Saat status regulasi kuning, atau anak tampak cemas; selalu bersama guru.
+  koreksi: Setelah respons keliru, sebelum bantuan dinaikkan.
+  guru: Saat tutor memanggil guru atau menunggu persetujuan guru.
+  buka_tutup: Awal dan akhir sesi.
+ujaran:
+- id: UJ-PUJ-01
+  kategori: pujian
+  ujaran: Bagus!
+- id: UJ-PUJ-02
+  kategori: pujian
+  ujaran: Hebat!
+- id: UJ-PUJ-03
+  kategori: pujian
+  ujaran: Kamu berhasil!
+- id: UJ-PUJ-04
+  kategori: pujian
+  ujaran: Kerja bagus!
+- id: UJ-PUJ-05
+  kategori: pujian
+  ujaran: Kamu melakukannya sendiri!
+- id: UJ-PUJ-06
+  kategori: pujian
+  ujaran: Terima kasih sudah mencoba.
+- id: UJ-PUJ-07
+  kategori: pujian
+  ujaran: Kamu sudah mencuci tangan.
+- id: UJ-PUJ-08
+  kategori: pujian
+  ujaran: Kamu sudah menunggu giliran.
+- id: UJ-PUJ-09
+  kategori: pujian
+  ujaran: Kamu sudah meminta tolong.
+- id: UJ-PUJ-10
+  kategori: pujian
+  ujaran: Kamu sudah menyimpan tasmu.
+- id: UJ-PUJ-11
+  kategori: pujian
+  ujaran: Kamu menunjuk gambar yang benar.
+- id: UJ-PUJ-12
+  kategori: pujian
+  ujaran: Kamu sudah selesai.
+- id: UJ-TRA-01
+  kategori: transisi
+  ujaran: Sebentar lagi selesai.
+- id: UJ-TRA-02
+  kategori: transisi
+  ujaran: Satu kali lagi, lalu selesai.
+- id: UJ-TRA-03
+  kategori: transisi
+  ujaran: Kegiatan ini sudah selesai.
+- id: UJ-TRA-04
+  kategori: transisi
+  ujaran: Lihat jadwalmu.
+- id: UJ-TRA-05
+  kategori: transisi
+  ujaran: Sekarang waktunya [aktivitas berikutnya].
+- id: UJ-TRA-06
+  kategori: transisi
+  ujaran: Ini kegiatan berikutnya.
+- id: UJ-TRA-07
+  kategori: transisi
+  ujaran: Kita pindah ke [tempat aktivitas].
+- id: UJ-TRA-08
+  kategori: transisi
+  ujaran: Taruh kartu di kotak selesai.
+- id: UJ-TRA-09
+  kategori: transisi
+  ujaran: Jadwal hari ini berubah.
+- id: UJ-TRA-10
+  kategori: transisi
+  ujaran: Lihat gambar jadwal yang baru.
+- id: UJ-TEN-01
+  kategori: menenangkan
+  ujaran: Kamu aman.
+- id: UJ-TEN-02
+  kategori: menenangkan
+  ujaran: Kita istirahat dulu.
+- id: UJ-TEN-03
+  kategori: menenangkan
+  ujaran: Kamu boleh istirahat.
+- id: UJ-TEN-04
+  kategori: menenangkan
+  ujaran: Pelan-pelan saja.
+- id: UJ-TEN-05
+  kategori: menenangkan
+  ujaran: '[sebutan guru] ada di dekatmu.'
+- id: UJ-TEN-06
+  kategori: menenangkan
+  ujaran: Tunjuk kartu istirahat.
+- id: UJ-TEN-07
+  kategori: menenangkan
+  ujaran: Pegang [benda kesukaan].
+- id: UJ-TEN-08
+  kategori: menenangkan
+  ujaran: Tarik napas pelan.
+- id: UJ-TEN-09
+  kategori: menenangkan
+  ujaran: Kamu boleh duduk di sini.
+- id: UJ-TEN-10
+  kategori: menenangkan
+  ujaran: Kita tunggu sampai kamu siap.
+- id: UJ-KOR-01
+  kategori: koreksi
+  ujaran: Coba lagi, ya.
+- id: UJ-KOR-02
+  kategori: koreksi
+  ujaran: Lihat gambarnya.
+- id: UJ-KOR-03
+  kategori: koreksi
+  ujaran: Lihat contohnya.
+- id: UJ-KOR-04
+  kategori: koreksi
+  ujaran: Kita coba bersama.
+- id: UJ-KOR-05
+  kategori: koreksi
+  ujaran: Ikuti contoh ini.
+- id: UJ-KOR-06
+  kategori: koreksi
+  ujaran: Satu kali lagi.
+- id: UJ-KOR-07
+  kategori: koreksi
+  ujaran: Ini caranya.
+- id: UJ-KOR-08
+  kategori: koreksi
+  ujaran: Tunjuk yang ini.
+- id: UJ-KOR-09
+  kategori: koreksi
+  ujaran: Lihat tanganku.
+- id: UJ-GUR-01
+  kategori: guru
+  ujaran: Kita tunggu [sebutan guru] sebentar.
+- id: UJ-GUR-02
+  kategori: guru
+  ujaran: '[sebutan guru] akan membantu.'
+- id: UJ-GUR-03
+  kategori: guru
+  ujaran: '[sebutan guru] datang.'
+- id: UJ-GUR-04
+  kategori: guru
+  ujaran: Tunggu sebentar, ya.
+- id: UJ-GUR-05
+  kategori: guru
+  ujaran: Duduk dulu, ya.
+- id: UJ-GUR-06
+  kategori: guru
+  ujaran: '[sebutan guru] sudah di sini.'
+- id: UJ-BUK-01
+  kategori: buka_tutup
+  ujaran: Halo, [nama panggilan].
+- id: UJ-BUK-02
+  kategori: buka_tutup
+  ujaran: Ayo kita mulai.
+- id: UJ-BUK-03
+  kategori: buka_tutup
+  ujaran: Hari ini kita [aktivitas].
+- id: UJ-BUK-04
+  kategori: buka_tutup
+  ujaran: Lihat gambar kegiatan ini.
+- id: UJ-BUK-05
+  kategori: buka_tutup
+  ujaran: Kegiatan kita sudah selesai.
+- id: UJ-BUK-06
+  kategori: buka_tutup
+  ujaran: Terima kasih sudah belajar.
+- id: UJ-BUK-07
+  kategori: buka_tutup
+  ujaran: Sampai jumpa lagi.
+- id: UJ-BUK-08
+  kategori: buka_tutup
+  ujaran: Waktunya istirahat sekarang.
+- id: UJ-BUK-09
+  kategori: buka_tutup
+  ujaran: Kembali ke kursimu.
+- id: UJ-BUK-10
+  kategori: buka_tutup
+  ujaran: Kita belajar lagi besok.
+- id: UJ-BUK-11
+  kategori: buka_tutup
+  ujaran: Kamu boleh pilih kegiatan favorit.

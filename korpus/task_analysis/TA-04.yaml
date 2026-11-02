@@ -1,0 +1,55 @@
+id: TA-04
+jenis: task_analysis
+versi: 2
+status: valid
+validasi:
+  aiken_v: 0.90
+  aiken_v_aspek:
+    relevansi: 0.92
+    kejelasan_langkah: 0.92
+    kesesuaian_kemampuan: 0.83
+    keamanan: 0.92
+  metode: Aiken's V, n = 3 validator, skala 1-5 (lo = 1, c = 5)
+  validator:
+  - Siti Qomariah, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 24 Oktober 2026)
+  - Natalia Damayanti, S.Psi., M.Psi. (Psikolog, Universitas Dinamika Bangsa; lembar 27 Oktober 2026)
+  - Yulinda, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 31 Oktober 2026)
+  tanggal: '2026-10-31'
+  dokumen: Lembar Penilaian Validasi Ahli TA versi 2; rekap Rekap_Aiken_V_Validasi_TA_v2_terisi.xlsx
+  keputusan: Layak digunakan (Siti dan Natalia - dengan revisi sesuai catatan; Yulinda - tanpa revisi). Lembar asli dikonfirmasi diterima promotor 31 Oktober 2026.
+judul: Membereskan alat tulis
+domain: kemandirian
+level: dasar
+setting: meja dan rak kelas
+prasyarat: mengenali rak bergambar
+langkah:
+- nomor: 1
+  tindakan: Meletakkan pensil di meja
+  ujaran: Letakkan pensil di meja.
+  kartu: Pensil di meja
+- nomor: 2
+  tindakan: Mengambil kotak pensil
+  ujaran: Ambil kotak pensil.
+  kartu: Kotak pensil
+- nomor: 3
+  tindakan: Memasukkan pensil ke kotak
+  ujaran: Masukkan pensil ke kotak.
+  kartu: Pensil masuk kotak
+  diulang: true
+- nomor: 4
+  tindakan: Menutup kotak pensil
+  ujaran: Tutup kotak pensil.
+  kartu: Kotak tertutup
+- nomor: 5
+  tindakan: Menaruh kotak di rak
+  ujaran: Taruh kotak di rak.
+  kartu: Kotak di rak bergambar
+- nomor: 6
+  tindakan: Kembali ke kursi
+  ujaran: Kembali ke kursimu.
+  kartu: Anak duduk
+catatan: Jika ada lebih dari satu alat, langkah 3 diulang dengan menyebut nama alat. Mulai dari satu alat,
+  lalu tambah bertahap.
+rujukan:
+- Wardany & Apriyanti (2022), Buku Panduan Guru Pendidikan Khusus bagi Peserta Didik Autis Disertai Hambatan
+  Intelektual, Kemendikbudristek, hlm. 45

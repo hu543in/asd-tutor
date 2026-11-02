@@ -1,0 +1,20 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Secrets: never commit
+.env
+*.env
+data/.jembatan_token
+
+# Child and session data: only the synthetic example profile is tracked
+data/*
+!data/profil.json
+
+# Generated or downloaded on the server
+data/chroma/
+static/aset/kartu/*.png
+static/aset/kartu/*.jpg
+static/aset/kartu/kartu.json
+static/aset/kartu/_kandidat/

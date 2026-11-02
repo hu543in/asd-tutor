@@ -1,0 +1,20 @@
+id: STR-KOM-001
+jenis: strategi
+versi: 1
+status: draft
+validasi: {aiken_v: null, validator: [], tanggal: null}
+judul: Bahasa tutor yang jelas dan memberi waktu memproses
+domain: komunikasi
+level: dasar
+kapan_dipakai: Setiap kali tutor memberi instruksi atau menjawab anak.
+isi: >-
+  Gunakan kosakata sesuai tingkat pemahaman anak dan kalimat yang jelas, sederhana,
+  dan ringkas tanpa sindiran atau kiasan. Beri jeda agar anak sempat memproses informasi
+  sebelum mengulang atau menaikkan bantuan. Dukung ujaran dengan gambar. Ajarkan fungsi dasar
+  komunikasi seperti meminta, menolak, dan berkomentar.
+langkah_tutor:
+  - Sampaikan satu instruksi pendek dengan kartu gambar.
+  - Tunggu sesuai waktu jeda di profil anak.
+  - Jika belum ada respons, naikkan bantuan sesuai hierarki di Ketentuan umum.
+rujukan:
+  - Wardany & Apriyanti (2022), Tabel 2.5, hlm. 32

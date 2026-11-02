@@ -1,0 +1,62 @@
+id: TA-09
+jenis: task_analysis
+versi: 2
+status: valid
+validasi:
+  aiken_v: 0.92
+  aiken_v_aspek:
+    relevansi: 1.00
+    kejelasan_langkah: 0.83
+    kesesuaian_kemampuan: 0.92
+    keamanan: 0.92
+  metode: Aiken's V, n = 3 validator, skala 1-5 (lo = 1, c = 5)
+  validator:
+  - Siti Qomariah, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 24 Oktober 2026)
+  - Natalia Damayanti, S.Psi., M.Psi. (Psikolog, Universitas Dinamika Bangsa; lembar 27 Oktober 2026)
+  - Yulinda, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 31 Oktober 2026)
+  tanggal: '2026-10-31'
+  dokumen: Lembar Penilaian Validasi Ahli TA versi 2; rekap Rekap_Aiken_V_Validasi_TA_v2_terisi.xlsx
+  keputusan: Layak digunakan (Siti dan Natalia - dengan revisi sesuai catatan; Yulinda - tanpa revisi). Lembar asli dikonfirmasi diterima promotor 31 Oktober 2026.
+judul: Menenangkan diri di sudut tenang
+domain: regulasi sensori
+level: dasar
+setting: sudut tenang kelas
+prasyarat: mengenali kartu istirahat
+pemicu: status regulasi kuning atau merah, atau anak meminta istirahat; guru selalu mendampingi
+langkah:
+- nomor: 1
+  tindakan: Menunjuk kartu istirahat
+  ujaran: Tunjuk kartu istirahat.
+  kartu: Kartu istirahat
+- nomor: 2
+  tindakan: Berjalan ke sudut tenang
+  ujaran: Jalan ke sudut tenang.
+  kartu: Sudut tenang
+- nomor: 3
+  tindakan: Duduk di tempat yang nyaman
+  ujaran: Duduk di bantal.
+  kartu: Bantal duduk
+- nomor: 4
+  tindakan: 'Memegang benda kesukaan (alternatif: menarik napas pelan)'
+  ujaran: Pegang [benda kesukaan].
+  kartu: Benda pilihan anak
+- nomor: 5
+  tindakan: Beristirahat
+  ujaran: Kamu boleh istirahat dulu.
+  kartu: Anak beristirahat
+- nomor: 6
+  tindakan: Menunjuk kartu siap, atas keinginan anak
+  ujaran: Tunjuk kartu siap kalau mau kembali.
+  kartu: Kartu siap
+  ulangi_ujaran: false
+- nomor: 7
+  tindakan: Kembali ke meja bersama guru
+  ujaran: Kembali ke mejamu.
+  kartu: Meja anak
+  syarat: guru_setuju
+catatan: Napas opsional. Lampu/timer bukan penentu kembali. Langkah 7 hanya setelah guru setuju. Tutor
+  tidak memaksa dan tidak menanyakan kesiapan berulang. Jika anak menolak, tutor diam dan guru mengambil
+  alih.
+rujukan:
+- Wardany & Apriyanti (2022), Buku Panduan Guru Pendidikan Khusus bagi Peserta Didik Autis Disertai Hambatan
+  Intelektual, Kemendikbudristek, Tabel 2.3 hlm. 30; hlm. 120; hlm. 133

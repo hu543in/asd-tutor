@@ -1,0 +1,55 @@
+id: TA-08
+jenis: task_analysis
+versi: 2
+status: valid
+validasi:
+  aiken_v: 0.90
+  aiken_v_aspek:
+    relevansi: 1.00
+    kejelasan_langkah: 0.92
+    kesesuaian_kemampuan: 0.75
+    keamanan: 0.92
+  metode: Aiken's V, n = 3 validator, skala 1-5 (lo = 1, c = 5)
+  validator:
+  - Siti Qomariah, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 24 Oktober 2026)
+  - Natalia Damayanti, S.Psi., M.Psi. (Psikolog, Universitas Dinamika Bangsa; lembar 27 Oktober 2026)
+  - Yulinda, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 31 Oktober 2026)
+  tanggal: '2026-10-31'
+  dokumen: Lembar Penilaian Validasi Ahli TA versi 2; rekap Rekap_Aiken_V_Validasi_TA_v2_terisi.xlsx
+  keputusan: Layak digunakan (Siti dan Natalia - dengan revisi sesuai catatan; Yulinda - tanpa revisi). Lembar asli dikonfirmasi diterima promotor 31 Oktober 2026.
+judul: Berpindah aktivitas dengan jadwal visual
+domain: regulasi sensori
+level: dasar
+setting: kelas
+prasyarat: mengenali gambar aktivitas di jadwal
+langkah:
+- nomor: 1
+  tindakan: Mendengar peringatan waktu
+  ujaran: Lima menit lagi selesai.
+  kartu: Jam pasir
+  jenis: informasi
+- nomor: 2
+  tindakan: Melihat jadwal visual
+  ujaran: Lihat jadwalmu.
+  kartu: Papan jadwal
+- nomor: 3
+  tindakan: Menunjuk aktivitas yang selesai
+  ujaran: Tunjuk gambar [aktivitas sekarang].
+  kartu: Gambar aktivitas sekarang
+- nomor: 4
+  tindakan: Memindahkan kartu ke kotak selesai
+  ujaran: Taruh kartu di kotak selesai.
+  kartu: Kotak 'selesai'
+- nomor: 5
+  tindakan: Menunjuk aktivitas berikutnya
+  ujaran: Tunjuk gambar berikutnya.
+  kartu: Gambar aktivitas berikutnya
+- nomor: 6
+  tindakan: Pergi ke tempat aktivitas berikutnya
+  ujaran: Jalan ke [tempat aktivitas].
+  kartu: Tempat aktivitas berikutnya
+catatan: Placeholder diisi dari jadwal harian anak. Ujaran langkah 1 adalah informasi, bukan perintah.
+  Jika anak belum memahami menit, gunakan penanda visual konkret.
+rujukan:
+- Wardany & Apriyanti (2022), Buku Panduan Guru Pendidikan Khusus bagi Peserta Didik Autis Disertai Hambatan
+  Intelektual, Kemendikbudristek, Tabel 2.7 hlm. 35; hlm. 45; hlm. 132

@@ -1,0 +1,11 @@
+{
+  "model": "guru.glb",
+  "tinggi": 1.6,
+  "rotasiY": 0,
+  "klip": {
+    "diam": "Idle",
+    "bicara": "Talk",
+    "contohkan": "Wave"
+  },
+  "morfMulut": ["jawOpen", "mouthOpen", "viseme_aa"]
+}

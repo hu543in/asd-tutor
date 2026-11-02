@@ -1,0 +1,60 @@
+id: TA-03
+jenis: task_analysis
+versi: 2
+status: valid
+validasi:
+  aiken_v: 0.94
+  aiken_v_aspek:
+    relevansi: 1.00
+    kejelasan_langkah: 0.92
+    kesesuaian_kemampuan: 0.92
+    keamanan: 0.92
+  metode: Aiken's V, n = 3 validator, skala 1-5 (lo = 1, c = 5)
+  validator:
+  - Siti Qomariah, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 24 Oktober 2026)
+  - Natalia Damayanti, S.Psi., M.Psi. (Psikolog, Universitas Dinamika Bangsa; lembar 27 Oktober 2026)
+  - Yulinda, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 31 Oktober 2026)
+  tanggal: '2026-10-31'
+  dokumen: Lembar Penilaian Validasi Ahli TA versi 2; rekap Rekap_Aiken_V_Validasi_TA_v2_terisi.xlsx
+  keputusan: Layak digunakan (Siti dan Natalia - dengan revisi sesuai catatan; Yulinda - tanpa revisi). Lembar asli dikonfirmasi diterima promotor 31 Oktober 2026.
+judul: Makan bekal saat istirahat
+domain: kemandirian
+level: dasar
+setting: meja kelas
+prasyarat: TA-02 sudah dilakukan sebelum makan
+langkah:
+- nomor: 1
+  tindakan: Mengambil kotak bekal dari tas
+  ujaran: Ambil kotak bekalmu.
+  kartu: Kotak bekal di tas
+- nomor: 2
+  tindakan: Meletakkan kotak bekal di meja
+  ujaran: Taruh kotak bekal di meja.
+  kartu: Kotak bekal di meja
+- nomor: 3
+  tindakan: Membuka tutup kotak bekal
+  ujaran: Buka tutup kotak bekal.
+  kartu: Tutup terbuka
+- nomor: 4
+  tindakan: Mengambil sendok
+  ujaran: Ambil sendokmu.
+  kartu: Sendok
+- nomor: 5
+  tindakan: Makan satu suap (diulang)
+  ujaran: Makan satu suap.
+  kartu: Anak makan
+  diulang: true
+- nomor: 6
+  tindakan: Menutup kotak bekal
+  ujaran: Tutup kotak bekalmu.
+  kartu: Tutup tertutup
+- nomor: 7
+  tindakan: Memasukkan kotak bekal ke tas
+  ujaran: Masukkan kotak bekal ke tas.
+  kartu: Kotak masuk tas
+catatan: Tutor tidak memberi saran jenis atau jumlah makanan, tidak memaksa menghabiskan bekal, dan tidak
+  terus meminta suapan. Anak boleh berhenti dengan ucapan atau kartu 'selesai'. Alergi dan keamanan menelan
+  dicek dari orang tua sebelum sesi.
+rujukan:
+- Wardany & Apriyanti (2022), Buku Panduan Guru Pendidikan Khusus bagi Peserta Didik Autis Disertai Hambatan
+  Intelektual, Kemendikbudristek, hlm. 37-38

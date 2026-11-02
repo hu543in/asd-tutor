@@ -1,0 +1,51 @@
+id: TA-10
+jenis: task_analysis
+versi: 2
+status: valid
+validasi:
+  aiken_v: 0.85
+  aiken_v_aspek:
+    relevansi: 0.92
+    kejelasan_langkah: 0.83
+    kesesuaian_kemampuan: 0.75
+    keamanan: 0.92
+  metode: Aiken's V, n = 3 validator, skala 1-5 (lo = 1, c = 5)
+  validator:
+  - Siti Qomariah, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 24 Oktober 2026)
+  - Natalia Damayanti, S.Psi., M.Psi. (Psikolog, Universitas Dinamika Bangsa; lembar 27 Oktober 2026)
+  - Yulinda, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 31 Oktober 2026)
+  tanggal: '2026-10-31'
+  dokumen: Lembar Penilaian Validasi Ahli TA versi 2; rekap Rekap_Aiken_V_Validasi_TA_v2_terisi.xlsx
+  keputusan: Layak digunakan (Siti dan Natalia - dengan revisi sesuai catatan; Yulinda - tanpa revisi). Lembar asli dikonfirmasi diterima promotor 31 Oktober 2026.
+judul: Mencocokkan angka 1-5 dengan jumlah benda
+domain: akademik
+level: dasar
+setting: meja kelas (benda nyata atau virtual)
+prasyarat: menghitung lisan 1-5
+langkah:
+- nomor: 1
+  tindakan: Melihat kartu angka
+  ujaran: Lihat angka ini.
+  kartu: Kartu angka dengan kotak kosong sebanyak angka
+- nomor: 2
+  tindakan: Menyebut angka
+  ujaran: Sebutkan angkanya.
+  kartu: Mulut berbicara
+- nomor: 3
+  tindakan: Menaruh satu benda di setiap kotak, berhenti saat semua kotak penuh
+  ujaran: Taruh satu [benda hitung] di satu kotak.
+  kartu: Satu benda di satu kotak
+  diulang: true
+  penanda_berhenti: Kotaknya sudah penuh.
+- nomor: 4
+  tindakan: Menghitung benda
+  ujaran: Hitung [benda hitung]mu.
+  kartu: Jari menunjuk benda
+- nomor: 5
+  tindakan: Menunjuk tombol selesai
+  ujaran: Tunjuk tombol selesai.
+  kartu: Tombol selesai
+catatan: Mulai dari angka 1-3 bila perlu, lalu 1-5. Benda nyata yang dikenal anak.
+rujukan:
+- Wardany & Apriyanti (2022), Buku Panduan Guru Pendidikan Khusus bagi Peserta Didik Autis Disertai Hambatan
+  Intelektual, Kemendikbudristek, hlm. 125-126; hlm. 137-138; Tabel 2.9 hlm. 40

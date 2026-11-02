@@ -1,0 +1,54 @@
+id: TA-07
+jenis: task_analysis
+versi: 2
+status: valid
+validasi:
+  aiken_v: 0.83
+  aiken_v_aspek:
+    relevansi: 0.92
+    kejelasan_langkah: 0.75
+    kesesuaian_kemampuan: 0.83
+    keamanan: 0.83
+  metode: Aiken's V, n = 3 validator, skala 1-5 (lo = 1, c = 5)
+  validator:
+  - Siti Qomariah, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 24 Oktober 2026)
+  - Natalia Damayanti, S.Psi., M.Psi. (Psikolog, Universitas Dinamika Bangsa; lembar 27 Oktober 2026)
+  - Yulinda, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 31 Oktober 2026)
+  tanggal: '2026-10-31'
+  dokumen: Lembar Penilaian Validasi Ahli TA versi 2; rekap Rekap_Aiken_V_Validasi_TA_v2_terisi.xlsx
+  keputusan: Layak digunakan (Siti dan Natalia - dengan revisi sesuai catatan; Yulinda - tanpa revisi). Lembar asli dikonfirmasi diterima promotor 31 Oktober 2026.
+judul: Bergiliran menyusun balok
+domain: sosial
+level: menengah
+setting: area bermain (fisik atau metaverse)
+prasyarat: TA-05, mengenali kartu giliran
+langkah:
+- nomor: 1
+  tindakan: Duduk di tempat bermain
+  ujaran: Duduk di tempatmu.
+  kartu: Dua anak duduk
+- nomor: 2
+  tindakan: Melihat kartu giliran
+  ujaran: Lihat kartu giliran.
+  kartu: Kartu bergambar wajah
+- nomor: 3
+  tindakan: Menunggu saat giliran teman
+  ujaran: Tunggu, ini giliran teman.
+  kartu: Kartu menunjuk teman
+  diulang: true
+- nomor: 4
+  tindakan: Menaruh satu balok saat gilirannya
+  ujaran: Taruh satu balok.
+  kartu: Tangan menaruh balok
+  diulang: true
+- nomor: 5
+  tindakan: Menyerahkan giliran
+  ujaran: Ucapkan, 'Giliranmu.'
+  kartu: Kartu menunjuk teman
+  diulang: true
+ulangi: langkah 3-5 diulang sampai permainan selesai
+catatan: Mulai dari 2-3 putaran. Akhiri dengan penanda visual 'selesai'; hentikan lebih awal bila anak
+  lelah. Generalisasi diuji dengan teman nyata.
+rujukan:
+- Wardany & Apriyanti (2022), Buku Panduan Guru Pendidikan Khusus bagi Peserta Didik Autis Disertai Hambatan
+  Intelektual, Kemendikbudristek, Tabel 2.3 hlm. 30; Tabel 2.7 hlm. 35; hlm. 33

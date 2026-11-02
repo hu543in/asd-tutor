@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dasbor Guru Tutor</title>
+<style>
+:root{
+  --bg:#f5f4f0; --panel:#ffffff; --ink:#1d2321; --muted:#5f6b67; --line:#dedbd3;
+  --accent:#2f6f5e; --accent-ink:#ffffff; --warn:#b4561a; --warn-bg:#fdf0e6;
+  --bad:#b3261e; --bad-bg:#fbeaea; --ok:#2f6f5e; --ok-bg:#e8f3ef; --chip:#efede7;
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#171a19; --panel:#202523; --ink:#e9ecea; --muted:#9aa6a1; --line:#343b38;
+    --accent:#5fb39b; --accent-ink:#0f1513; --warn:#f0a067; --warn-bg:#3a2a1e; --bad:#f08a83;
+    --bad-bg:#3a2020; --ok:#7cc9b1; --ok-bg:#1e322b; --chip:#2b312f;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
+header h1{font-size:17px;margin:0;font-weight:650}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--bad);display:inline-block}
+.dot.on{background:var(--ok)}
+.meta{color:var(--muted);font-size:13px}
+.banner{padding:8px 16px;background:var(--bad-bg);color:var(--bad);font-weight:600;font-size:14px}
+main{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:16px;padding:16px;max-width:1300px;margin:0 auto}
+@media (max-width:860px){main{grid-template-columns:minmax(0,1fr)}}
+section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:16px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button,select,input{font:inherit;border-radius:8px;border:1px solid var(--line);padding:9px 12px;background:var(--panel);color:var(--ink);max-width:100%}
+select{min-width:0}
+#ta{flex:1 1 100%}
+
+button{cursor:pointer;font-weight:600}
+button:hover{border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.stop{background:var(--bad);color:#fff;border-color:var(--bad);width:100%;padding:13px;font-size:16px}
+input[type=text],input[type=password]{flex:1;min-width:0}
+.avatar{min-height:120px}
+.ucap{font-size:26px;font-weight:650;margin:6px 0 8px;min-height:36px}
+.pujian{color:var(--ok);font-weight:600;min-height:20px}
+.chip{display:inline-block;background:var(--chip);border-radius:999px;padding:2px 10px;font-size:13px;margin:2px 4px 2px 0}
+.think{color:var(--muted);font-size:14px;min-height:20px}
+.alert{display:none;background:var(--warn-bg);color:var(--warn);border:2px solid var(--warn);border-radius:10px;padding:12px;margin-bottom:16px;font-weight:600}
+.alert.show{display:block}
+.alert.tinggi{background:var(--bad-bg);color:var(--bad);border-color:var(--bad)}
+.alert button{margin-top:8px}
+#log{display:flex;flex-direction:column-reverse;gap:8px;max-height:calc(100vh - 160px);overflow:auto}
+.e{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px}
+.e.in{border-left-color:var(--muted)}
+.e.lolos{border-left-color:var(--ok)}
+.e.blok{border-left-color:var(--bad);background:var(--bad-bg)}
+.e.guru{border-left-color:var(--warn);background:var(--warn-bg)}
+.e .t{color:var(--muted);font-size:12px}
+.e code{font-size:13px;word-break:break-word}
+details summary{cursor:pointer;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+#login{max-width:520px;margin:40px auto}
+label{font-size:13px;color:var(--muted);display:block;margin:8px 0 4px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+  <span class="dot" id="dot" title="koneksi"></span>
+  <h1>Dasbor Guru · Tutor ASD</h1>
+  <span class="meta" id="meta">belum terhubung</span>
+</header>
+<div class="banner hidden" id="banner">MODE UJI (dev): korpus draft ikut dimuat. Hanya untuk profil uji, jangan dipakai dengan anak.</div>
+
+<div id="login">
+  <section>
+    <h2>Masuk</h2>
+    <label for="token">Token jembatan (dicetak saat jembatan dijalankan)</label>
+    <div class="row"><input type="password" id="token" autocomplete="off"><button id="btnInfo">Muat</button></div>
+    <label for="anak">Anak</label>
+    <div class="row"><select id="anak" disabled></select><button class="primary" id="btnHubung" disabled>Hubungkan</button></div>
+    <p class="meta" id="loginMsg"></p>
+  </section>
+</div>
+
+<main id="app" class="hidden">
+  <div>
+    <div class="alert" id="alert"><div id="alertText"></div><button id="btnAlert">Saya sudah di dekat anak</button></div>
+
+    <section class="avatar">
+      <h2>Yang diterima avatar</h2>
+      <div class="pujian" id="vPujian"></div>
+      <div class="ucap" id="vUcap">—</div>
+      <div id="vChips"></div>
+      <div class="think" id="think"></div>
+    </section>
+
+    <section>
+      <h2>Sesi</h2>
+      <div class="row">
+        <select id="ta" aria-label="Task analysis"></select>
+        <select id="fase" aria-label="Fase"></select>
+        <button class="primary" id="btnMulai">MULAI</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <label for="latar" style="font-size:13px">Latar ruangan</label>
+        <select id="latar" aria-label="Latar ruangan"></select>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button data-guru="SETUJU">SETUJU</button>
+        <button data-guru="LANJUT">LANJUT</button>
+        <button data-guru="SELESAI">SELESAI</button>
+      </div>
+      <div style="margin-top:12px"><button class="stop" id="btnStop">HENTIKAN · avatar diam</button></div>
+    </section>
+
+    <section>
+      <details id="sim" open>
+        <summary>Simulasi metaverse</summary>
+        <label>Respons anak</label>
+        <div class="row">
+          <button data-sim='{"tipe":"respons","nilai":"benar"}'>Benar</button>
+          <button data-sim='{"tipe":"respons","nilai":"keliru"}'>Keliru</button>
+          <button data-sim='{"tipe":"respons","nilai":"tidak_ada"}'>Tidak ada</button>
+          <button data-sim='{"tipe":"lanjut"}'>Lanjut (informasi)</button>
+        </div>
+        <label>Regulasi</label>
+        <div class="row">
+          <button data-sim='{"tipe":"regulasi","nilai":"kuning"}'>Kuning</button>
+          <button data-sim='{"tipe":"regulasi","nilai":"merah"}'>Merah</button>
+        </div>
+        <label for="teksAnak">Ucapan anak</label>
+        <div class="row"><input type="text" id="teksAnak" maxlength="200" placeholder="mis. tidak mau"><button id="btnAnak">Kirim</button></div>
+      </details>
+    </section>
+  </div>
+
+  <section>
+    <h2>Catatan giliran</h2>
+    <div id="log"></div>
+  </section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let ulang = false, audio = null;
+function bunyi(){
+  try{
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.35].forEach(t => {
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.frequency.value = 880; g.gain.value = 0.15; o.connect(g); g.connect(audio.destination);
+      o.start(audio.currentTime + t); o.stop(audio.currentTime + t + 0.2);
+    });
+  }catch(e){}
+}
+let ws = null, info = null, anak = null, mulaiPikir = 0, timer = null;
+
+function simpan(k, v){ try{ sessionStorage.setItem(k, v) }catch(e){} }
+function baca(k){ try{ return sessionStorage.getItem(k) || "" }catch(e){ return "" } }
+$("#token").value = baca("token");
+
+$("#btnInfo").onclick = async () => {
+  const t = $("#token").value.trim();
+  try{
+    const r = await fetch("/api/info?token=" + encodeURIComponent(t));
+    if(!r.ok){ $("#loginMsg").textContent = "Token salah."; return; }
+    info = await r.json(); simpan("token", t);
+    $("#anak").innerHTML = info.anak.map(a => `<option>${esc(a)}</option>`).join("");
+    $("#anak").disabled = $("#btnHubung").disabled = !info.anak.length;
+    $("#loginMsg").textContent = info.anak.length ? `Mode ${info.mode}, penggerak ${info.penggerak}.` : "Tidak ada profil anak yang diizinkan di mode ini.";
+    const peta = info.peta_latar || {}, nama = Object.fromEntries((info.latar || []).map(l => [l.id, l.nama]));
+    $("#latar").innerHTML = `<option value="otomatis">Otomatis (ikut TA)</option>` +
+      (info.latar || []).map(l => `<option value="${esc(l.id)}">${esc(l.nama)}</option>`).join("");
+    $("#latar").disabled = !(info.latar || []).length;
+    $("#ta").innerHTML = info.ta.map(x => `<option value="${esc(x.id)}">${esc(x.id)} · ${esc(x.judul)}${peta[x.id] ? " · " + esc(nama[peta[x.id]]) : ""}</option>`).join("");
+    $("#fase").innerHTML = info.fase.map(f => `<option ${f==="B"?"selected":""}>${esc(f)}</option>`).join("");
+    $("#banner").classList.toggle("hidden", info.mode !== "dev");
+  }catch(e){ $("#loginMsg").textContent = "Jembatan tidak bisa dihubungi."; }
+};
+
+$("#btnHubung").onclick = () => { anak = $("#anak").value; hubungkan(); };
+
+function hubungkan(){
+  const proto = location.protocol === "https:" ? "wss" : "ws";
+  ws = new WebSocket(`${proto}://${location.host}/ws/guru?anak=${encodeURIComponent(anak)}&token=${encodeURIComponent($("#token").value.trim())}`);
+  ws.onopen = () => { $("#login").classList.add("hidden"); $("#app").classList.remove("hidden"); $("#dot").classList.add("on"); };
+  ws.onclose = () => { $("#dot").classList.remove("on"); $("#meta").textContent = "terputus · mencoba lagi"; setTimeout(hubungkan, 3000); };
+  ws.onmessage = ev => terima(JSON.parse(ev.data));
+}
+const kirim = o => ws && ws.readyState === 1 && ws.send(JSON.stringify(o));
+
+$("#btnMulai").onclick = () => kirim({tipe:"mulai", ta:$("#ta").value, fase:$("#fase").value});
+document.querySelectorAll("[data-guru]").forEach(b => b.onclick = () => kirim({tipe:"guru", perintah:b.dataset.guru}));
+document.querySelectorAll("[data-sim]").forEach(b => b.onclick = () => kirim({tipe:"simulasi", acara:JSON.parse(b.dataset.sim)}));
+$("#latar").onchange = () => kirim({tipe:"latar", nilai:$("#latar").value});
+$("#btnStop").onclick = () => kirim({tipe:"hentikan"});
+$("#btnAnak").onclick = () => { const t = $("#teksAnak").value.trim(); if(t){ kirim({tipe:"simulasi", acara:{tipe:"anak", teks:t}}); $("#teksAnak").value=""; } };
+$("#teksAnak").addEventListener("keydown", e => { if(e.key === "Enter") $("#btnAnak").click(); });
+$("#btnAlert").onclick = () => $("#alert").classList.remove("show");
+
+function jam(w){ return w ? w.slice(11,19) : ""; }
+function log(cls, html){
+  const d = document.createElement("div"); d.className = "e " + cls; d.innerHTML = html; $("#log").appendChild(d);
+}
+
+function terima(m){
+  if(m.tipe === "riwayat"){ $("#log").innerHTML = ""; ulang = true; m.isi.forEach(terima); ulang = false; return; }
+  if(m.tipe === "status"){
+    $("#meta").textContent = `anak ${m.id_anak} · ${m.sesi_aktif ? `${m.ta} fase ${m.fase}` : "belum ada sesi"}${m.jeda ? " · DIJEDA" : ""} · metaverse ${m.metaverse_terhubung ? "terhubung" : "tidak terhubung"}${m.latar ? ` · latar ${m.latar}${m.latar_pilihan === "otomatis" ? " (otomatis)" : ""}` : ""}`;
+    if(m.latar_pilihan && $("#latar").value !== m.latar_pilihan) $("#latar").value = m.latar_pilihan;
+    if(m.berpikir && !timer){ mulaiPikir = Date.now(); timer = setInterval(() => $("#think").textContent = `Tutor berpikir… ${Math.round((Date.now()-mulaiPikir)/1000)} dtk`, 500); }
+    if(!m.berpikir && timer){ clearInterval(timer); timer = null; $("#think").textContent = ""; }
+    return;
+  }
+  if(m.tipe === "masuk"){
+    log("in", `<div class="t">${jam(m.waktu)} · #${m.giliran} · dari ${esc(m.asal)}</div><code>${esc(m.pesan)}</code>`);
+    return;
+  }
+  if(m.tipe === "tutor"){
+    const k = m.keluaran || {};
+    if(!m.dibuang){
+      $("#vPujian").textContent = k.pujian || "";
+      $("#vUcap").textContent = k.ucap || "—";
+      $("#vChips").innerHTML = [k.aksi && `aksi: ${k.aksi}`, k.kartu && `kartu: ${k.kartu}`, k.ta && `${k.ta} langkah ${k.langkah}`].filter(Boolean).map(x => `<span class="chip">${esc(x)}</span>`).join("");
+    }
+    const status = m.dibuang ? `DIBUANG, tidak sampai ke avatar (${m.alasan_dibuang || "sesi berganti"})` : (m.lolos ? "lolos penjaga" : "DIBLOKIR penjaga");
+    log(m.lolos ? "lolos" : "blok",
+      `<div class="t">${jam(m.waktu)} · #${m.giliran} · ${status} · ${m.durasi ?? "?"} dtk</div>` +
+      (k.pujian ? `<div>Pujian: <b>${esc(k.pujian)}</b></div>` : "") +
+      `<div>Ucap: <b>${esc(k.ucap || "—")}</b> <span class="chip">${esc(k.aksi)}</span></div>` +
+      (k.catatan_guru ? `<div class="t">Catatan guru: ${esc(k.catatan_guru)}</div>` : "") +
+      (m.pelanggaran?.length ? `<div>Pelanggaran: ${esc(m.pelanggaran.join("; "))}</div>` : "") +
+      (m.peringatan?.length ? `<div class="t">Peringatan: ${esc(m.peringatan.join("; "))}</div>` : "") +
+      (m.tool?.length ? `<div class="t">Tool: ${esc(m.tool.join(", "))}</div>` : ""));
+    return;
+  }
+  if(m.tipe === "panggil_guru"){
+    const tinggi = m.tingkat === "tinggi";
+    $("#alertText").textContent = `Tutor memanggil guru${tinggi ? " (SEGERA)" : ""}: ` + (m.alasan || "");
+    $("#alert").classList.add("show");
+    $("#alert").classList.toggle("tinggi", tinggi);
+    if(!ulang) bunyi();
+    log(tinggi ? "blok" : "guru", `<div class="t">${jam(m.waktu)}${m.giliran ? " · #" + m.giliran : ""} · tingkat ${esc(m.tingkat || "sedang")}</div><b>Guru dipanggil.</b> ${esc(m.alasan)}`);
+    return;
+  }
+  if(m.tipe === "info" || m.tipe === "galat"){
+    log(m.tipe === "galat" ? "blok" : "in", `<div class="t">${jam(m.waktu)}</div>${esc(m.pesan)}`);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+# /etc/systemd/system/asd-jembatan.service
+[Unit]
+Description=Jembatan metaverse Tutor ASD (127.0.0.1:8765)
+After=hermes-tutor.service
+Wants=hermes-tutor.service
+StartLimitIntervalSec=0
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/asd-rag
+Environment=HOME=/home/ubuntu
+Environment=ASD_RAG_MODE=dev
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/ubuntu/asd-rag/venv/bin/python jembatan.py
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/ubuntu/asd-rag/data
+
+[Install]
+WantedBy=multi-user.target

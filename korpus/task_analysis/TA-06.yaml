@@ -1,0 +1,58 @@
+id: TA-06
+jenis: task_analysis
+versi: 2
+status: valid
+validasi:
+  aiken_v: 0.96
+  aiken_v_aspek:
+    relevansi: 1.00
+    kejelasan_langkah: 0.83
+    kesesuaian_kemampuan: 1.00
+    keamanan: 1.00
+  metode: Aiken's V, n = 3 validator, skala 1-5 (lo = 1, c = 5)
+  validator:
+  - Siti Qomariah, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 24 Oktober 2026)
+  - Natalia Damayanti, S.Psi., M.Psi. (Psikolog, Universitas Dinamika Bangsa; lembar 27 Oktober 2026)
+  - Yulinda, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 31 Oktober 2026)
+  tanggal: '2026-10-31'
+  dokumen: Lembar Penilaian Validasi Ahli TA versi 2; rekap Rekap_Aiken_V_Validasi_TA_v2_terisi.xlsx
+  keputusan: Layak digunakan (Siti dan Natalia - dengan revisi sesuai catatan; Yulinda - tanpa revisi). Lembar asli dikonfirmasi diterima promotor 31 Oktober 2026.
+judul: Meminta bantuan
+domain: komunikasi
+level: dasar
+setting: meja kelas
+prasyarat: menyampaikan kebutuhan dengan ucapan, isyarat, atau kartu
+pemicu: anak tidak dapat menyelesaikan tugas atau terlihat kesulitan
+langkah:
+- nomor: 1
+  tindakan: Meletakkan benda yang sulit
+  ujaran: Letakkan bendanya.
+  kartu: Benda di meja
+- nomor: 2
+  tindakan: Meminta bantuan
+  ujaran: Ucapkan, 'Tolong bantu saya.'
+  kartu: Kartu 'Tolong'
+  respons_diterima:
+  - ucapan
+  - kartu Tolong
+  - isyarat
+  - menunjuk
+  - mengangkat tangan
+- nomor: 3
+  tindakan: Menunjuk bagian yang sulit
+  ujaran: Tunjuk yang susah.
+  kartu: Jari menunjuk
+- nomor: 4
+  tindakan: Menunggu guru membantu
+  ujaran: Tunggu [sebutan guru] membantu.
+  kartu: Guru membantu
+- nomor: 5
+  tindakan: Mengucapkan terima kasih
+  ujaran: Ucapkan, 'Terima kasih.'
+  kartu: Kartu 'Terima kasih'
+  opsional: true
+catatan: Permintaan spontan tanpa ujaran tutor dicatat M. Guru segera menanggapi. Tutor tidak mengambil
+  alih tugas. Langkah 5 tidak dihitung dalam kriteria penguasaan.
+rujukan:
+- Wardany & Apriyanti (2022), Buku Panduan Guru Pendidikan Khusus bagi Peserta Didik Autis Disertai Hambatan
+  Intelektual, Kemendikbudristek, Tabel 2.5 hlm. 32; Tabel 2.7 hlm. 35

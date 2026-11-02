@@ -1,0 +1,66 @@
+id: TA-01
+jenis: task_analysis
+versi: 2
+status: valid
+validasi:
+  aiken_v: 0.94
+  aiken_v_aspek:
+    relevansi: 1.00
+    kejelasan_langkah: 0.92
+    kesesuaian_kemampuan: 0.92
+    keamanan: 0.92
+  metode: Aiken's V, n = 3 validator, skala 1-5 (lo = 1, c = 5)
+  validator:
+  - Siti Qomariah, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 24 Oktober 2026)
+  - Natalia Damayanti, S.Psi., M.Psi. (Psikolog, Universitas Dinamika Bangsa; lembar 27 Oktober 2026)
+  - Yulinda, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 31 Oktober 2026)
+  tanggal: '2026-10-31'
+  dokumen: Lembar Penilaian Validasi Ahli TA versi 2; rekap Rekap_Aiken_V_Validasi_TA_v2_terisi.xlsx
+  keputusan: Layak digunakan (Siti dan Natalia - dengan revisi sesuai catatan; Yulinda - tanpa revisi). Lembar asli dikonfirmasi diterima promotor 31 Oktober 2026.
+judul: Masuk kelas dan menyimpan tas
+domain: kemandirian
+level: dasar
+setting: pintu kelas, loker
+prasyarat: berjalan mandiri, mengenali foto diri
+langkah:
+- nomor: 1
+  tindakan: Berhenti di depan pintu kelas
+  ujaran: Berhenti di depan pintu.
+  kartu: Pintu kelas
+- nomor: 2
+  tindakan: Menyapa guru (lihat TA-05)
+  ujaran: Sapa [sebutan guru].
+  kartu: Guru melambai
+  respons_diterima:
+  - ucapan
+  - lambaian
+  - kartu salam
+- nomor: 3
+  tindakan: Masuk ke kelas
+  ujaran: Masuk ke kelas.
+  kartu: Anak masuk kelas
+- nomor: 4
+  tindakan: Berjalan ke loker
+  ujaran: Jalan ke lokermu.
+  kartu: Loker dengan foto anak
+- nomor: 5
+  tindakan: Melepas tas dari punggung
+  ujaran: Lepas tasmu.
+  kartu: Tas dilepas
+- nomor: 6
+  tindakan: Memasukkan tas ke loker
+  ujaran: Masukkan tas ke loker.
+  kartu: Tas di dalam loker
+- nomor: 7
+  tindakan: Berjalan ke kursi
+  ujaran: Jalan ke kursimu.
+  kartu: Kursi dengan foto anak
+- nomor: 8
+  tindakan: Duduk di kursi
+  ujaran: Duduk di kursimu.
+  kartu: Anak duduk
+catatan: Loker dan kursi diberi foto, nama, atau simbol yang benar-benar dikenali anak. Pada langkah 2,
+  salam nonverbal diterima sebagai respons benar.
+rujukan:
+- Wardany & Apriyanti (2022), Buku Panduan Guru Pendidikan Khusus bagi Peserta Didik Autis Disertai Hambatan
+  Intelektual, Kemendikbudristek, hlm. 44-45

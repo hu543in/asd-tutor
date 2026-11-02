@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kelas Tutor ASD</title>
+<!-- A-Frame 1.6.0 (MIT) disalin ke server agar tidak bergantung pada CDN di jaringan sekolah -->
+<script src="/aset/vendor/aframe-v1.6.0.min.js"></script>
+<script>
+/* Avatar manusia 3D (glTF/GLB) bila tersedia di /aset/avatar/avatar.json; tanpa itu, avatar sederhana dipakai.
+   Animasi dimainkan dengan THREE.AnimationMixer bawaan A-Frame, tanpa pustaka tambahan. */
+/* Penggerak mulut (visem sederhana) untuk bahasa Indonesia.
+   Posisi bicara diperkirakan dari panjang teks dan disinkronkan ulang dengan event "boundary" dari mesin suara
+   (posisi kata yang sedang diucapkan). Tiap huruf diberi bentuk mulut: bukaan (0-1) dan lebar relatif. */
+window.Mulut = (() => {
+  const BENTUK = {a: [1.0, 1.0], e: [0.55, 1.15], i: [0.35, 1.25], o: [0.75, 0.72], u: [0.5, 0.62],
+                  m: [0, 0.95], b: [0, 0.95], p: [0, 0.95], f: [0.15, 1.05], v: [0.15, 1.05], w: [0.35, 0.7]};
+  const st = {aktif: false, teks: "", acuanIdx: 0, acuanT: 0, cps: 12, buka: 0, lebar: 1};
+  function target(){
+    if(!st.aktif) return [0, 1];
+    const idx = st.acuanIdx + (performance.now() - st.acuanT) * st.cps / 1000;
+    if(idx >= st.teks.length) return [0, 1];
+    const ch = (st.teks[Math.floor(idx)] || " ").toLowerCase();
+    if(BENTUK[ch]) return BENTUK[ch];
+    if(/[a-z]/.test(ch)) return [0.22, 1.0];       // konsonan lain: sedikit terbuka
+    return [0.04, 1.0];                             // spasi dan tanda baca: hampir tertutup
+  }
+  return {
+    mulai(teks){ Object.assign(st, {aktif: true, teks, acuanIdx: 0, acuanT: performance.now()}); },
+    batas(idx){ if(st.aktif && Number.isFinite(idx)){ st.acuanIdx = idx; st.acuanT = performance.now(); } },
+    berhenti(){ st.aktif = false; },
+    langkah(){                                     // dipanggil tiap frame; perubahan dihaluskan agar tidak berkedut
+      const kini = performance.now();
+      if(kini - (st.terakhir || 0) < 8) return st;  // sekali per frame walau dipanggil dua komponen
+      st.terakhir = kini;
+      const [b, l] = target();
+      st.buka += (b - st.buka) * 0.35; st.lebar += (l - st.lebar) * 0.3;
+      return st;
+    }
+  };
+})();
+AFRAME.registerComponent("mulut-sinkron", {
+  init(){ this.rongga = this.el.querySelector(".rongga"); this.bibir = this.el.querySelector(".bibir"); },
+  tick(){
+    const m = Mulut.langkah();
+    const sy = 0.12 + m.buka * 0.75, sx = 0.85 * m.lebar + 0.15;
+    if(this.rongga) this.rongga.object3D.scale.set(sx, sy, 0.35);
+    if(this.bibir) this.bibir.object3D.scale.set(sx, Math.max(0.12, sy), 1);
+  }
+});
+AFRAME.registerComponent("kedip", {
+  init(){ this.berikut = 2500 + Math.random() * 3000; },
+  tick(t){
+    if(t > this.berikut){ this.mulai = t; this.berikut = t + 3500 + Math.random() * 3000; }
+    const d = this.mulai ? t - this.mulai : 999;
+    this.el.object3D.scale.y = d < 140 ? 0.15 : 1;  // kedipan pelan dan jarang
+    this.el.object3D.position.y = d < 140 ? 1.19 : 0;
+  }
+});
+AFRAME.registerComponent("avatar-glb", {
+  schema: {tinggi: {default: 1.6}, klip: {default: "{}"}, morf: {default: "jawOpen,mouthOpen,viseme_aa,MouthOpen"},
+           overlay: {default: "{}"}, gerakHalus: {default: true}},
+  init(){
+    this.mixer = null; this.aksi = {}; this.kini = null; this.morf = []; this.bicara = false; this.t = 0;
+    this.overlay = null; this.putar = null; this.dasarY = 0;
+    this.el.addEventListener("model-loaded", () => this.siap());
+  },
+  siap(){
+    const obj = this.el.getObject3D("mesh");
+    // Samakan tinggi model (unit apa pun) dengan tinggi sasaran, kaki di lantai, badan di tengah entitas.
+    const keLokal = () => new THREE.Matrix4().copy(this.el.object3D.matrixWorld).invert();
+    this.el.object3D.updateMatrixWorld(true);
+    const kotak = new THREE.Box3().setFromObject(obj).applyMatrix4(keLokal()), ukuran = new THREE.Vector3(), tengah = new THREE.Vector3();
+    kotak.getSize(ukuran); kotak.getCenter(tengah);
+    if(ukuran.y > 0){
+      const k = this.data.tinggi / ukuran.y, P = obj.position.clone();
+      obj.scale.multiplyScalar(k);
+      obj.position.set(-k * (tengah.x - P.x), -k * (kotak.min.y - P.y), -k * (tengah.z - P.z));
+    }
+    // Model tanpa morph mulut: bukaan mulut digambar sebagai elips gelap di depan bagian mulut model.
+    const ov = JSON.parse(this.data.overlay || "{}");
+    if(ov.mesh){
+      let sasaran = null;
+      obj.traverse(n => { if(!sasaran && n.name === ov.mesh) sasaran = n; });
+      if(sasaran){
+        this.el.object3D.updateMatrixWorld(true);
+        const b = new THREE.Box3().setFromObject(sasaran).applyMatrix4(keLokal()), c = new THREE.Vector3(), u = new THREE.Vector3();
+        b.getCenter(c); b.getSize(u);
+        const m = new THREE.Mesh(new THREE.CircleGeometry(0.5, 28), new THREE.MeshBasicMaterial({color: 0x3d1717}));
+        m.position.set(c.x, c.y + (ov.geserY || 0), b.max.z + 0.004);
+        m.userData = {lebar: u.x * (ov.lebar || 0.9), bukaMaks: ov.bukaMaks || 0.016};
+        m.scale.set(m.userData.lebar, 0.0001, 1); m.visible = false;
+        this.el.object3D.add(m);
+        this.overlay = m;
+      }
+    }
+    this.dasarY = this.el.object3D.rotation.y;
+    const klip = (obj.animations && obj.animations.length) ? obj.animations : (this.el.components["gltf-model"].model.animations || []);
+    if(klip.length){
+      this.mixer = new THREE.AnimationMixer(obj);
+      const peta = JSON.parse(this.data.klip || "{}");
+      for(const [peran, nama] of Object.entries(peta)){
+        const c = klip.find(x => x.name.toLowerCase().includes(String(nama).toLowerCase()));
+        if(c) this.aksi[peran] = this.mixer.clipAction(c);
+      }
+    }
+    const daftar = this.data.morf.split(",").map(x => x.trim());
+    obj.traverse(n => {
+      if(n.isMesh && n.morphTargetDictionary){
+        const i = daftar.map(d => n.morphTargetDictionary[d]).find(x => x !== undefined);
+        if(i !== undefined) this.morf.push([n, i]);
+      }
+    });
+    this.main("diam");
+    this.el.emit("avatar-siap", {klip: Object.keys(this.aksi), morf: this.morf.length + (this.overlay ? 1 : 0)});
+  },
+  main(peran, sekali){
+    if(peran === "contohkan" && !this.aksi.contohkan){ this.putar = {mulai: performance.now()}; return; }   // tanpa klip: menoleh ke papan kartu
+    const a = this.aksi[peran] || (peran !== "diam" && this.aksi.diam);
+    if(!a || a === this.kini) return;
+    a.reset();
+    a.setLoop(sekali ? THREE.LoopOnce : THREE.LoopRepeat, sekali ? 1 : Infinity);
+    a.clampWhenFinished = Boolean(sekali);
+    if(this.kini) a.crossFadeFrom(this.kini, 0.4, false);
+    a.play();
+    this.kini = a;
+    if(sekali){
+      const kembali = e => { if(e.action === a){ this.mixer.removeEventListener("finished", kembali); this.kini = null; this.main(this.bicara ? "bicara" : "diam"); } };
+      this.mixer.addEventListener("finished", kembali);
+    }
+  },
+  setBicara(ya){
+    this.bicara = ya;
+    if(this.aksi.bicara && this.kini !== this.aksi.contohkan) this.main(ya ? "bicara" : "diam");
+    if(!ya) for(const [n, i] of this.morf) n.morphTargetInfluences[i] = 0;
+  },
+  tick(t, dt){
+    if(this.mixer) this.mixer.update(dt / 1000);
+    const st = Mulut.langkah();
+    if(this.morf.length){
+      const buka = this.bicara ? st.buka * 0.8 : 0;   // bukaan mulut mengikuti penggerak visem
+      for(const [n, i] of this.morf) n.morphTargetInfluences[i] = buka;
+    }
+    if(this.overlay){
+      const buka = this.bicara ? st.buka : 0, d = this.overlay.userData;
+      this.overlay.visible = buka > 0.06;
+      this.overlay.scale.set(d.lebar * (0.75 + 0.25 * st.lebar), Math.max(0.0001, d.bukaMaks * buka), 1);
+    }
+    // Gerak halus untuk model tanpa animasi: bergoyang sangat pelan; menoleh ke papan saat "contohkan".
+    if(!this.mixer && this.data.gerakHalus && !(typeof gerakDikurangi === "function" && gerakDikurangi())){
+      let ry = this.dasarY + Math.sin(t / 2600) * 0.025;
+      if(this.putar){
+        const d = (performance.now() - this.putar.mulai) / 1000;
+        const f = d < 0.6 ? d / 0.6 : d < 1.8 ? 1 : d < 2.4 ? 1 - (d - 1.8) / 0.6 : 0;
+        ry += 0.4 * Math.sin(f * Math.PI / 2);
+        if(d >= 2.4) this.putar = null;
+      }
+      this.el.object3D.rotation.y = ry;
+    }
+  }
+});
+</script>
+<style>
+/* Tampilan tenang untuk anak autis: warna lembut, kontras cukup, tanpa kilat atau gerakan cepat. */
+:root{
+  --latar:#e4ebe7; --panel:#fbfaf6; --tinta:#2f3a37; --redup:#5d6b67; --garis:#c9d3cf;
+  --aksen:#4f8a7b; --pujian:#3f7d5c; --hati:#b5543a;
+}
+html,body{margin:0;height:100%;background:var(--latar);color:var(--tinta);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.lapis{position:fixed;z-index:10}
+#persiapan{inset:0;display:flex;align-items:center;justify-content:center;background:var(--latar);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#persiapan form{background:var(--panel);border:1px solid var(--garis);border-radius:12px;padding:24px;
+  max-width:420px;width:100%;display:grid;gap:12px}
+#persiapan h1{font-size:20px;margin:0}
+#persiapan p{margin:0;color:var(--redup);font-size:14px}
+label{font-size:13px;color:var(--redup);display:grid;gap:4px}
+input[type=text],input[type=password]{font:inherit;padding:10px 12px;border:1px solid var(--garis);border-radius:8px;background:#fff;color:var(--tinta)}
+button{font:inherit;font-weight:600;padding:10px 14px;border-radius:8px;border:1px solid var(--garis);
+  background:var(--panel);color:var(--tinta);cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--aksen);outline-offset:2px}
+button.utama{background:var(--aksen);border-color:var(--aksen);color:#fff}
+#pesanSiap{color:var(--hati);min-height:20px}
+#subtitel{left:50%;transform:translateX(-50%);bottom:max(20px,env(safe-area-inset-bottom,0px));
+  width:min(760px,calc(100% - 32px));text-align:center;pointer-events:none}
+#subtitel .kotak{background:rgba(251,250,246,.94);border:1px solid var(--garis);border-radius:14px;padding:12px 18px;display:none}
+#subtitel .kotak.ada{display:block}
+@media (max-width: 600px){ #subtitel{bottom:max(76px,env(safe-area-inset-bottom,0px))} #teksUcap{font-size:24px} }
+#teksPujian{color:var(--pujian);font-weight:600;font-size:22px;min-height:0}
+#teksUcap{font-size:30px;font-weight:650;letter-spacing:.01em}
+#status{top:max(10px,env(safe-area-inset-top,0px));left:max(12px,env(safe-area-inset-left,0px));
+  display:flex;gap:8px;align-items:center;font-size:12px;color:var(--redup)}
+.titik{width:10px;height:10px;border-radius:50%;background:var(--hati)}
+.titik.on{background:var(--aksen)}
+#tombolPanel{right:max(12px,env(safe-area-inset-right,0px));top:max(10px,env(safe-area-inset-top,0px));font-size:13px;padding:6px 10px;opacity:.75}
+#panel{right:max(12px,env(safe-area-inset-right,0px));top:52px;background:var(--panel);border:1px solid var(--garis);
+  border-radius:12px;padding:12px;width:min(300px,calc(100% - 24px));display:grid;gap:10px;
+  max-height:calc(100vh - 70px);overflow-y:auto}
+#panel h2{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--redup);margin:0}
+#panel .baris{display:flex;flex-wrap:wrap;gap:6px}
+#panel .catatan{font-size:12px;color:var(--redup)}
+#panel select{font:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--garis);border-radius:8px;background:#fff;color:var(--tinta)}
+#tirai{inset:0;background:var(--latar);opacity:0;pointer-events:none;transition:opacity .45s ease;z-index:5}
+#tirai.tutup{opacity:1}
+@media (prefers-reduced-motion: reduce){ #tirai{transition:none} }
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<div id="persiapan" class="lapis">
+  <form id="formSiap" autocomplete="off">
+    <h1>Kelas Tutor ASD</h1>
+    <p>Disiapkan oleh guru di perangkat anak. Suara tutor mulai setelah tombol Mulai ditekan.</p>
+    <label for="anak">ID anak (pseudonim)<input type="text" id="anak" value="A01" required></label>
+    <label for="token">Token jembatan<input type="password" id="token" required></label>
+    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="kurangiGerak"> Kurangi gerakan di layar</label>
+    <button class="utama" type="submit">Mulai</button>
+    <div id="pesanSiap" role="status"></div>
+  </form>
+</div>
+
+<div id="status" class="lapis" hidden><span class="titik" id="titik"></span><span id="teksStatus">menyambung…</span></div>
+<button id="tombolPanel" class="lapis" type="button" hidden>Panel guru</button>
+<div id="panel" class="lapis" hidden>
+  <h2>Respons anak</h2>
+  <div class="baris">
+    <button type="button" data-acara='{"tipe":"respons","nilai":"benar"}'>Benar</button>
+    <button type="button" data-acara='{"tipe":"respons","nilai":"keliru"}'>Keliru</button>
+    <button type="button" data-acara='{"tipe":"respons","nilai":"tidak_ada"}'>Tidak ada</button>
+    <button type="button" data-acara='{"tipe":"lanjut"}'>Lanjut</button>
+  </div>
+  <h2>Regulasi</h2>
+  <div class="baris">
+    <button type="button" data-acara='{"tipe":"regulasi","nilai":"kuning"}'>Kuning</button>
+    <button type="button" data-acara='{"tipe":"regulasi","nilai":"merah"}'>Merah</button>
+  </div>
+  <h2>Suara</h2>
+  <label for="pilihSuara">Suara<select id="pilihSuara"></select></label>
+  <label for="kecepatan">Kecepatan bicara<select id="kecepatan">
+    <option value="0.8">Pelan</option><option value="0.85" selected>Agak pelan (bawaan)</option><option value="1">Normal</option>
+  </select></label>
+  <div class="baris">
+    <button type="button" id="tesSuara">Tes suara</button>
+    <button type="button" id="tesSuaraJeda">Tes, adegan dijeda</button>
+  </div>
+  <div class="catatan" id="infoSuara"></div>
+  <div class="catatan" id="hasilTes"></div>
+  <pre class="catatan" id="logSuara" style="white-space:pre-wrap;margin:0;font:11px/1.4 ui-monospace,monospace"></pre>
+  <div class="catatan" id="infoLatar">Latar: ruang kelas (cadangan).</div>
+  <div class="catatan" id="infoAvatar">Avatar: bentuk sederhana.</div>
+  <div class="catatan" id="infoKartu">Gambar kartu: belum ada; kartu tampil sebagai teks.</div>
+  <div class="catatan">Sesi dimulai dan dihentikan dari dasbor guru.</div>
+</div>
+
+<div id="subtitel" class="lapis" aria-live="polite">
+  <div class="kotak" id="kotakSubtitel"><div id="teksPujian"></div><div id="teksUcap"></div></div>
+</div>
+
+<div id="tirai" class="lapis" aria-hidden="true"></div>
+
+<canvas id="kanvasKartu" width="1024" height="736" hidden></canvas>
+
+<a-scene id="adegan" renderer="antialias: true; colorManagement: true; maxCanvasWidth: 1920; maxCanvasHeight: 1920" vr-mode-ui="enabled: true"
+         background="color: #dfe8e4" loading-screen="dotsColor: #4f8a7b; backgroundColor: #e4ebe7">
+  <a-entity id="cahayaAmbien" light="type: ambient; intensity: 0.7; color: #ffffff"></a-entity>
+  <a-entity id="cahayaArah" light="type: directional; intensity: 0.5; color: #fff7ea" position="-2 4 2"></a-entity>
+  <a-entity id="cahayaTitik" light="type: point; intensity: 0.2; distance: 8; color: #fff3df" position="0 2.2 -1.5"></a-entity>
+
+  <!-- Latar ruangan: dibangun dari /aset/latar/latar.json (kelas, pintu & loker, wastafel, area bermain,
+       sudut tenang). Isi di bawah ini hanya cadangan bila latar.json tidak bisa dimuat. -->
+  <a-entity id="latar">
+    <!-- Ruang kelas: lantai kayu terang, tiga dinding, jendela, rak buku, meja anak, tanaman.
+         Warna lembut dan sedikit benda agar perhatian anak tertuju pada avatar dan papan kartu. -->
+    <a-plane rotation="-90 0 0" width="9" height="9" position="0 0 -1.5" color="#dccfb8"></a-plane>
+    <a-plane position="0 1.6 -4" width="9" height="3.2" color="#eef1ea"></a-plane>
+    <a-plane position="-4.5 1.6 -1.5" rotation="0 90 0" width="5" height="3.2" color="#e6ece4"></a-plane>
+    <a-plane position="4.5 1.6 -1.5" rotation="0 -90 0" width="5" height="3.2" color="#e6ece4"></a-plane>
+    <a-plane position="0 3.2 -1.5" rotation="90 0 0" width="9" height="5" color="#f3f3ee"></a-plane>
+    <a-plane position="0 0.06 -3.99" width="9" height="0.12" color="#c9bba2"></a-plane>
+    <a-plane position="-4.49 0.06 -1.5" rotation="0 90 0" width="5" height="0.12" color="#c9bba2"></a-plane>
+    <a-plane position="4.49 0.06 -1.5" rotation="0 -90 0" width="5" height="0.12" color="#c9bba2"></a-plane>
+    <!-- jendela di dinding kiri -->
+    <a-entity position="-4.48 1.75 -2.2" rotation="0 90 0">
+      <a-plane width="1.9" height="1.25" color="#bfd3cc"></a-plane>
+      <a-plane width="1.76" height="1.11" position="0 0 0.005" color="#d4e8f0"></a-plane>
+      <a-plane width="0.04" height="1.11" position="0 0 0.01" color="#bfd3cc"></a-plane>
+      <a-plane width="1.76" height="0.04" position="0 0 0.01" color="#bfd3cc"></a-plane>
+    </a-entity>
+    <!-- rak buku rendah di kanan belakang -->
+    <a-entity position="3.4 0 -3.7">
+      <a-box width="1.5" height="0.9" depth="0.35" position="0 0.45 0" color="#c8b394"></a-box>
+      <a-box width="1.4" height="0.03" depth="0.33" position="0 0.45 0.01" color="#b19c7c"></a-box>
+      <a-box width="0.1" height="0.32" depth="0.25" position="-0.55 1.06 0" color="#9fb7c9"></a-box>
+      <a-box width="0.1" height="0.28" depth="0.25" position="-0.43 1.04 0" color="#c9b38a"></a-box>
+      <a-box width="0.1" height="0.3" depth="0.25" position="-0.31 1.05 0" color="#a9c4ad"></a-box>
+      <a-box width="0.34" height="0.2" depth="0.25" position="0.4 1.0 0" color="#d7c7a7"></a-box>
+    </a-entity>
+    <!-- meja anak rendah di depan papan -->
+    <a-entity position="1.0 0 -2.15">
+      <a-box width="1.1" height="0.05" depth="0.55" position="0 0.52 0" color="#d9c2a0"></a-box>
+      <a-cylinder radius="0.025" height="0.5" position="-0.48 0.25 -0.22" color="#b8a283"></a-cylinder>
+      <a-cylinder radius="0.025" height="0.5" position="0.48 0.25 -0.22" color="#b8a283"></a-cylinder>
+      <a-cylinder radius="0.025" height="0.5" position="-0.48 0.25 0.22" color="#b8a283"></a-cylinder>
+      <a-cylinder radius="0.025" height="0.5" position="0.48 0.25 0.22" color="#b8a283"></a-cylinder>
+    </a-entity>
+    <!-- tanaman -->
+    <a-entity position="-3.6 0 -3.5">
+      <a-cylinder radius="0.2" height="0.42" position="0 0.21 0" color="#c9a98a"></a-cylinder>
+      <a-sphere radius="0.38" position="0 0.75 0" color="#9cbfa4"></a-sphere>
+      <a-sphere radius="0.26" position="0.2 1.0 0.05" color="#8fb59a"></a-sphere>
+    </a-entity>
+    <!-- karpet bundar tempat avatar berdiri -->
+    <a-circle rotation="-90 0 0" radius="0.95" position="-1.25 0.005 -2.6" color="#cfe0d6"></a-circle>
+  </a-entity>
+
+  <!-- Avatar tutor -->
+  <a-entity id="avatar" position="-1.25 0 -2.6">
+    <a-entity id="tubuhAvatar" animation__napas="property: position; from: 0 0 0; to: 0 0.015 0; dur: 2600; dir: alternate; loop: true; easing: easeInOutSine">
+      <a-cylinder radius="0.28" height="0.7" position="0 0.75 0" color="#7fa7a0"></a-cylinder>
+      <a-sphere radius="0.26" position="0 1.36 0" color="#f0d6bf"></a-sphere>
+      <a-entity id="mata" kedip>
+        <a-sphere radius="0.03" position="-0.08 1.4 0.23" color="#33413d"></a-sphere>
+        <a-sphere radius="0.03" position="0.08 1.4 0.23" color="#33413d"></a-sphere>
+      </a-entity>
+      <!-- Mulut: rongga gelap + bibir; bukaan dan lebarnya mengikuti bunyi yang sedang diucapkan -->
+      <a-entity id="mulut" position="0 1.275 0.238" mulut-sinkron>
+        <a-sphere class="rongga" radius="0.06" scale="1 0.12 0.35" color="#5e2b2b"></a-sphere>
+        <a-torus class="bibir" radius="0.06" radius-tubular="0.008" scale="1 0.12 1" color="#b0645e"></a-torus>
+      </a-entity>
+      <a-entity position="-0.33 1.02 0">
+        <a-box width="0.09" height="0.5" depth="0.09" position="0 -0.25 0" color="#6d9690"></a-box>
+      </a-entity>
+      <a-entity id="lenganKanan" position="0.33 1.02 0"
+                animation__contoh="property: rotation; from: 0 0 0; to: -95 0 0; dur: 900; dir: alternate; loop: 2; easing: easeInOutSine; startEvents: contohkan">
+        <a-box width="0.09" height="0.5" depth="0.09" position="0 -0.25 0" color="#6d9690"></a-box>
+      </a-entity>
+    </a-entity>
+    <!-- Tanda menunggu guru: jam pasir tanpa kata -->
+    <a-entity id="ikonTunggu" position="0 1.95 0" visible="false"
+              animation__putar="property: rotation; to: 0 360 0; dur: 6000; loop: true; easing: linear">
+      <a-cone radius-bottom="0.07" radius-top="0.005" height="0.12" position="0 0.06 0" rotation="180 0 0" color="#c7a35a"></a-cone>
+      <a-cone radius-bottom="0.07" radius-top="0.005" height="0.12" position="0 -0.06 0" color="#c7a35a"></a-cone>
+    </a-entity>
+    <!-- Tanda selesai: lingkaran hijau tenang -->
+    <a-ring id="ikonSelesai" position="0 1.95 0" radius-inner="0.06" radius-outer="0.1" color="#6fae8b" visible="false"></a-ring>
+  </a-entity>
+
+  <!-- Papan kartu gambar -->
+  <a-entity id="papan" position="1.0 1.65 -3.1" scale="1.75 1.75 1.75" visible="false">
+    <a-plane id="bingkai" width="1.24" height="0.92" color="#b9c8c3"
+             animation__sorot="property: components.material.material.color; type: color; from: #b9c8c3; to: #e2b65a; dur: 650; dir: alternate; loop: 4; startEvents: sorot"></a-plane>
+    <!-- Teks kartu digambar ke kanvas dengan huruf sistem: tidak perlu memuat font dari CDN -->
+    <a-plane id="isiKartu" width="1.14" height="0.82" position="0 0 0.004" material="shader: flat; src: #kanvasKartu"></a-plane>
+  </a-entity>
+
+  <a-entity id="kamera" camera look-controls="pointerLockEnabled: false; magicWindowTrackingEnabled: false" wasd-controls="enabled: false" position="0 1.4 0"></a-entity>
+</a-scene>
+
+<script>
+const $ = s => document.querySelector(s);
+const KEDIAM = new Set(["panggil_guru", "tunggu_guru"]);
+let ws = null, anak = "", token = "", sudahTersambung = false, giliranTerakhir = 0, suara = null, antreanUcap = 0;
+
+function simpan(k, v){ try{ sessionStorage.setItem(k, v); }catch(e){} }
+function baca(k){ try{ return sessionStorage.getItem(k) || ""; }catch(e){ return ""; } }
+$("#anak").value = baca("anak") || "A01";
+$("#token").value = baca("token");
+
+const gerakDikurangi = () => $("#kurangiGerak").checked || matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- suara (Web Speech API, bahasa Indonesia) ---------- */
+/* Urutan bawaan: "Google Bahasa Indonesia" (diuji paling utuh; suara Microsoft lokal di Windows
+   memotong ujung kalimat), lalu suara lokal, lalu suara online lain. Pilihan guru disimpan di peramban ini. */
+function bacaLokal(k){ try{ return localStorage.getItem(k) || ""; }catch(e){ return ""; } }
+function simpanLokal(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
+function suaraIndonesia(){
+  if(!("speechSynthesis" in window)) return [];
+  return speechSynthesis.getVoices().filter(v => /^id([-_]|$)/i.test(v.lang))
+    .sort((a, b) => (/google/i.test(b.name) - /google/i.test(a.name)) || (b.localService - a.localService)
+                    || a.name.localeCompare(b.name));
+}
+function pilihSuara(){
+  const daftar = suaraIndonesia(), simpanan = bacaLokal("suara");
+  return daftar.find(v => v.name === simpanan) || daftar[0] || null;
+}
+function infoSuara(){
+  suara = pilihSuara();
+  const daftar = suaraIndonesia();
+  $("#pilihSuara").innerHTML = daftar.map(v =>
+    `<option value="${v.name.replace(/"/g, "&quot;")}">${v.name.replace(/</g, "&lt;")}${v.localService ? " · lokal" : " · online"}</option>`).join("");
+  if(suara) $("#pilihSuara").value = suara.name;
+  $("#pilihSuara").disabled = !daftar.length;
+  $("#infoSuara").textContent = suara
+    ? `Suara: ${suara.name} (${suara.lang}, ${suara.localService ? "lokal di perangkat" : "online, butuh internet stabil"}).`
+    : "Suara bahasa Indonesia tidak tersedia di perangkat ini; kalimat tetap tampil sebagai teks.";
+}
+const kecepatan = () => Number($("#kecepatan").value) || 0.85;
+$("#kecepatan").value = bacaLokal("kecepatan") || "0.85";
+$("#pilihSuara").addEventListener("change", () => { simpanLokal("suara", $("#pilihSuara").value); infoSuara(); });
+$("#kecepatan").addEventListener("change", () => simpanLokal("kecepatan", $("#kecepatan").value));
+if("speechSynthesis" in window){ speechSynthesis.onvoiceschanged = infoSuara; }
+
+let avatarGlb = null;   // komponen avatar-glb bila model 3D dimuat
+function mulut(aktif, teks){
+  if(aktif) Mulut.mulai(teks || ""); else Mulut.berhenti();
+  if(avatarGlb) avatarGlb.setBicara(aktif);
+}
+/* Catatan diagnosis di Panel guru: tiap kalimat, berapa lama, dan bagaimana berakhir. */
+const catatanSuara = [];
+function catatSuara(baris){
+  catatanSuara.unshift(`${new Date().toTimeString().slice(0, 8)} ${baris}`);
+  catatanSuara.length = Math.min(catatanSuara.length, 6);
+  const el = $("#logSuara"); if(el) el.textContent = catatanSuara.join("\n");
+}
+let waktuBatal = 0;
+const ucapanHidup = new Set();   // simpan rujukan: Chrome bisa membuang utterance di tengah kalimat (garbage collection)
+function hentikanSuara(){
+  antreanUcap++;
+  if("speechSynthesis" in window && (speechSynthesis.speaking || speechSynthesis.pending)){
+    speechSynthesis.cancel();
+    waktuBatal = performance.now();
+  }
+  mulut(false);
+}
+/* Ucapkan kalimat berurutan (pujian lalu ucap). Kalimat tidak pernah diubah: teks dari jembatan diputar apa adanya. */
+function ucapkan(kalimat, selesai){
+  const nomor = ++antreanUcap;
+  const berikut = i => {
+    if(nomor !== antreanUcap) return;
+    if(i >= kalimat.length){ mulut(false); selesai && selesai(); return; }
+    if(!suara){                                   // tanpa suara: teks tampil, mulut tetap bergerak sesuai teks
+      mulut(true, kalimat[i]);
+      setTimeout(() => { mulut(false); berikut(i + 1); }, Math.max(1200, kalimat[i].length * 80));
+      return;
+    }
+    // Chrome kadang memotong kalimat yang diucapkan tepat setelah cancel(); beri jeda singkat.
+    const tunda = Math.max(0, 200 - (performance.now() - waktuBatal));
+    setTimeout(() => {
+      if(nomor !== antreanUcap) return;
+      const u = new SpeechSynthesisUtterance(kalimat[i]);
+      u.voice = suara; u.lang = suara.lang; u.rate = kecepatan(); u.pitch = 1.0; u.volume = 1.0;
+      ucapanHidup.add(u);
+      let selesaiSekali = false, t0 = 0;
+      const lanjut = (cara) => {
+        if(selesaiSekali) return;
+        selesaiSekali = true; clearTimeout(pengaman); ucapanHidup.delete(u);
+        catatSuara(`"${kalimat[i]}" ${cara}${t0 ? ` · ${((performance.now() - t0) / 1000).toFixed(1)} dtk` : ""}`);
+        mulut(false);
+        setTimeout(() => berikut(i + 1), 250);
+      };
+      // pengaman bila onend tidak pernah datang
+      const pengaman = setTimeout(() => lanjut("tanpa akhir (pengaman)"), 4000 + kalimat[i].length * 160 / kecepatan());
+      u.onstart = () => { t0 = performance.now(); mulut(true, kalimat[i]); };
+      u.onboundary = e => Mulut.batas(e.charIndex);
+      u.onend = () => lanjut("selesai");
+      u.onerror = e => lanjut(`galat: ${e.error || "?"}`);
+      speechSynthesis.speak(u);
+    }, tunda);
+  };
+  berikut(0);
+}
+
+/* ---------- tampilan ---------- */
+function tampilSubtitel(pujian, ucap){
+  $("#teksPujian").textContent = pujian || "";
+  $("#teksUcap").textContent = ucap || "";
+  $("#kotakSubtitel").classList.toggle("ada", Boolean(pujian || ucap));
+}
+/* Gambar kartu: hanya gambar yang disetujui guru di /aset/kartu/kartu.json; lainnya tampil sebagai teks. */
+let petaKartu = [];   // [{pola: RegExp, berkas}]
+async function muatKartu(){
+  try{
+    const r = await fetch("/aset/kartu/kartu.json", {cache: "no-store"});
+    if(!r.ok) return;
+    const d = await r.json();
+    const esc = t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    petaKartu = (d.kartu || []).map(k => ({
+      // [placeholder] di nama kartu cocok dengan isian profil apa pun, mis. "Tangan di [pengering kelas]" -> "Tangan di handuk"
+      pola: new RegExp("^" + k.kartu.split(/\[[^\]]+\]/).map(esc).join(".+") + "$", "i"),
+      nama: k.kartu.toLowerCase(), templat: k.kartu.includes("["),
+      berkas: k.disetujui ? k.berkas : "", sumber: k.sumber
+    }));
+    const atrib = d.atribusi && petaKartu.some(k => k.berkas && k.sumber === "arasaac") ? d.atribusi.arasaac : "";
+    $("#infoKartu").textContent = `Gambar kartu disetujui: ${petaKartu.filter(k => k.berkas).length}.` + (atrib ? " " + atrib : "");
+  }catch(e){ /* tanpa kartu.json, semua kartu berupa teks */ }
+}
+const cacheGambar = {};
+function gambarUntuk(teks){
+  // Nama kartu yang persis sama didahulukan; pola [placeholder] hanya untuk nama yang tidak ada persis di daftar.
+  const t = (teks || "").toLowerCase();
+  const k = petaKartu.find(x => x.nama === t) || petaKartu.find(x => x.templat && x.pola.test(teks || ""));
+  if(!k || !k.berkas) return Promise.resolve(null);
+  if(!cacheGambar[k.berkas]){
+    cacheGambar[k.berkas] = new Promise(ok => {
+      const img = new Image();
+      img.onload = () => ok(img); img.onerror = () => ok(null);
+      img.src = "/aset/kartu/" + k.berkas.split("/").map(encodeURIComponent).join("/");
+    });
+  }
+  return cacheGambar[k.berkas];
+}
+function tulisBaris(c, teks, lebar, ukuran){
+  c.font = `600 ${ukuran}px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif`;
+  const baris = []; let kini = "";
+  for(const k of (teks || "").split(/\s+/).filter(Boolean)){
+    const coba = kini ? kini + " " + k : k;
+    if(c.measureText(coba).width > lebar && kini){ baris.push(kini); kini = k; } else kini = coba;
+  }
+  if(kini) baris.push(kini);
+  return baris;
+}
+let nomorKartu = 0;
+async function gambarKartu(teks){
+  const nomor = ++nomorKartu;
+  const img = await gambarUntuk(teks);
+  if(nomor !== nomorKartu) return;            // kartu sudah berganti saat gambar dimuat
+  const kv = $("#kanvasKartu"), c = kv.getContext("2d");
+  c.fillStyle = "#fbfaf6"; c.fillRect(0, 0, kv.width, kv.height);
+  c.fillStyle = "#2f3a37"; c.textAlign = "center"; c.textBaseline = "middle";
+  if(img){
+    // gambar di atas, nama kartu kecil di bawah (seperti kartu komunikasi bergambar)
+    const kotakH = kv.height - 170, k = Math.min((kv.width - 80) / img.width, (kotakH - 40) / img.height);
+    const w = img.width * k, h = img.height * k;
+    c.drawImage(img, (kv.width - w) / 2, 30 + (kotakH - 40 - h) / 2, w, h);
+    const baris = tulisBaris(c, teks, kv.width - 100, 64).slice(0, 2);
+    baris.forEach((b, i) => c.fillText(b, kv.width / 2, kv.height - 110 + i * 74 - (baris.length - 1) * 20));
+  }else{
+    const baris = tulisBaris(c, teks, kv.width - 120, 116);
+    const tinggi = 136, awal = kv.height / 2 - (baris.length - 1) * tinggi / 2;
+    baris.forEach((b, i) => c.fillText(b, kv.width / 2, awal + i * tinggi));
+  }
+  const mesh = $("#isiKartu").getObject3D("mesh");
+  if(mesh && mesh.material && mesh.material.map) mesh.material.map.needsUpdate = true;
+}
+function tampilKartu(kartu){
+  gambarKartu(kartu || "");
+  $("#papan").setAttribute("visible", Boolean(kartu));
+}
+function tandaTunggu(ya){ $("#ikonTunggu").setAttribute("visible", ya); }
+function tandaSelesai(ya){ $("#ikonSelesai").setAttribute("visible", ya); }
+
+function terima(m){
+  if(m.tipe === "tutor"){
+    giliranTerakhir = m.giliran;
+    if(m.aksi === "lapor") return;                 // pesan untuk guru saja: adegan anak dan suara tidak berubah
+    hentikanSuara();
+    tandaSelesai(m.aksi === "selesai");
+    tandaTunggu(KEDIAM.has(m.aksi));
+    if(m.kartu || m.ucap) tampilKartu(m.kartu);
+    if(KEDIAM.has(m.aksi)){ tampilSubtitel("", ""); tampilKartu(""); return; }
+    tampilSubtitel(m.pujian, m.ucap);
+    if(m.aksi === "ulang") $("#bingkai").emit("sorot");
+    if(m.aksi === "contohkan" && !gerakDikurangi()){
+      if(avatarGlb) avatarGlb.main("contohkan", true); else $("#lenganKanan").emit("contohkan");
+    }
+    const kalimat = [m.pujian, m.ucap].filter(Boolean);
+    ucapkan(kalimat, () => kirim({tipe: "selesai_diputar", giliran: m.giliran}));
+    return;
+  }
+  if(m.tipe === "latar"){
+    if(dataLatar) gantiLatar(m.nilai); else latarTertunda = m.nilai;
+    return;
+  }
+  if(m.tipe === "diam"){
+    hentikanSuara(); tampilSubtitel("", ""); tandaTunggu(true);
+    return;
+  }
+  if(m.tipe === "galat") console.warn("Jembatan:", m.pesan);
+}
+
+/* ---------- koneksi ---------- */
+function status(teks, aktif){
+  $("#teksStatus").textContent = teks;
+  $("#titik").classList.toggle("on", aktif);
+}
+function kirim(o){ if(ws && ws.readyState === 1) ws.send(JSON.stringify(o)); }
+function hubungkan(){
+  const proto = location.protocol === "https:" ? "wss" : "ws";
+  ws = new WebSocket(`${proto}://${location.host}/ws/metaverse?anak=${encodeURIComponent(anak)}&token=${encodeURIComponent(token)}`);
+  ws.onopen = () => { sudahTersambung = true; status(`tersambung · ${anak}`, true); };
+  ws.onmessage = ev => { try{ terima(JSON.parse(ev.data)); }catch(e){ console.warn(e); } };
+  ws.onclose = () => {
+    if(!sudahTersambung){
+      $("#persiapan").hidden = false;
+      $("#pesanSiap").textContent = "Tidak bisa tersambung. Periksa ID anak dan token, lalu coba lagi.";
+      return;
+    }
+    status("terputus · mencoba lagi", false);
+    setTimeout(hubungkan, 3000);
+  };
+}
+
+$("#formSiap").addEventListener("submit", e => {
+  e.preventDefault();
+  anak = $("#anak").value.trim(); token = $("#token").value.trim();
+  if(!anak || !token) return;
+  simpan("anak", anak); simpan("token", token);
+  $("#pesanSiap").textContent = "";
+  /* Membuka kunci audio peramban dengan ucapan kosong di dalam klik pengguna */
+  if("speechSynthesis" in window){ speechSynthesis.speak(new SpeechSynthesisUtterance("")); infoSuara(); }
+  if(gerakDikurangi()){
+    $("#tubuhAvatar").removeAttribute("animation__napas");
+    $("#ikonTunggu").removeAttribute("animation__putar");
+  }
+  $("#persiapan").hidden = true;
+  $("#status").hidden = false; $("#tombolPanel").hidden = false;
+  sudahTersambung = false;
+  hubungkan();
+});
+/* Layar tegak (ponsel): kamera mundur agar avatar dan papan kartu tetap terlihat bersama. */
+function aturKamera(){
+  const a = innerWidth / innerHeight;
+  const z = Math.max(0, 2.6 / a - 2.9);
+  $("#kamera").setAttribute("position", `${a < 1 ? 0.3 : -0.1} 1.45 ${z.toFixed(2)}`);
+}
+addEventListener("resize", aturKamera);
+
+/* Muat avatar 3D bila guru/pengembang menaruh model di static/aset/avatar/ (lihat README di folder itu). */
+async function muatAvatar(){
+  let cfg;
+  try{
+    const r = await fetch("/aset/avatar/avatar.json", {cache: "no-store"});
+    if(!r.ok) return;
+    cfg = await r.json();
+  }catch(e){ return; }
+  if(!cfg || !cfg.model) return;
+  const el = document.createElement("a-entity");
+  el.setAttribute("rotation", `0 ${Number(cfg.rotasiY || 0)} 0`);
+  el.setAttribute("avatar-glb", {tinggi: Number(cfg.tinggi || 1.6), klip: JSON.stringify(cfg.klip || {}),
+                                 morf: (cfg.morfMulut || ["jawOpen", "mouthOpen", "viseme_aa", "MouthOpen"]).join(","),
+                                 overlay: JSON.stringify(cfg.mulutOverlay || {}), gerakHalus: !gerakDikurangi()});
+  el.addEventListener("avatar-siap", ev => {
+    avatarGlb = el.components["avatar-glb"];
+    $("#tubuhAvatar").setAttribute("visible", false);
+    const d = ev.detail;
+    $("#infoAvatar").textContent = `Avatar 3D: ${cfg.model} · animasi: ${d.klip.join(", ") || "tidak ada"} · gerak mulut: ${d.morf ? "ya" : "tidak"}`
+      + (cfg.kredit ? ` · ${cfg.kredit}` : "");
+  });
+  el.addEventListener("model-error", () => { $("#infoAvatar").textContent = `Avatar 3D gagal dimuat (${cfg.model}); avatar sederhana dipakai.`; });
+  el.setAttribute("gltf-model", `url(/aset/avatar/${encodeURIComponent(cfg.model)})`);
+  $("#avatar").appendChild(el);
+}
+/* ---------- latar ruangan ----------
+   Jembatan mengirim {"tipe":"latar","nilai":"wastafel"} saat guru menekan MULAI (dari peta_ta) atau memilih latar.
+   Benda dibangun dari latar.json; hanya elemen dan atribut di daftar ini yang dipakai. */
+let dataLatar = null, latarAktif = "", nomorLatar = 0;
+const ELEMEN_LATAR = new Set(["plane", "box", "cylinder", "sphere", "circle", "cone", "ring", "torus", "entity"]);
+const ATRIBUT_LATAR = new Set(["position", "rotation", "scale", "width", "height", "depth", "radius", "radius-bottom",
+  "radius-top", "radius-inner", "radius-outer", "radius-tubular", "color", "opacity"]);
+function buatBenda(d, warna){
+  if(!d || !ELEMEN_LATAR.has(d.el)) return null;
+  const el = document.createElement("a-" + d.el);
+  for(const [k, v] of Object.entries(d)){
+    if(!ATRIBUT_LATAR.has(k)) continue;
+    const nilai = String(v).replace(/\{(\w+)\}/g, (_, n) => warna[n] || "#cccccc");
+    if(k === "opacity"){ el.setAttribute("material", `opacity: ${Number(nilai)}; transparent: true`); continue; }
+    el.setAttribute(k, nilai);
+  }
+  (d.anak || []).forEach(a => { const c = buatBenda(a, warna); if(c) el.appendChild(c); });
+  return el;
+}
+function pasangLatar(id){
+  const L = dataLatar.latar[id], wadah = $("#latar"), warna = L.warna || {};
+  while(wadah.firstChild) wadah.removeChild(wadah.firstChild);
+  [...(dataLatar.dasar || []), ...(L.benda || [])].forEach(d => { const el = buatBenda(d, warna); if(el) wadah.appendChild(el); });
+  if(L.model){   // model .glb opsional untuk latar ini (static/aset/latar/<berkas>)
+    const m = document.createElement("a-entity");
+    m.setAttribute("gltf-model", `url(/aset/latar/${encodeURIComponent(L.model.berkas)})`);
+    ["position", "rotation", "scale"].forEach(k => L.model[k] && m.setAttribute(k, L.model[k]));
+    wadah.appendChild(m);
+  }
+  const c = Object.assign({ambien: 0.7, arah: 0.5, titik: 0.2}, L.cahaya || {});
+  $("#cahayaAmbien").setAttribute("light", "intensity", c.ambien);
+  $("#cahayaArah").setAttribute("light", "intensity", c.arah);
+  $("#cahayaTitik").setAttribute("light", "intensity", c.titik);
+  if(L.langit) $("#adegan").setAttribute("background", "color", L.langit);
+  latarAktif = id;
+  $("#infoLatar").textContent = `Latar: ${L.nama || id}.`;
+}
+/* Ganti latar dengan tirai lembut (tanpa transisi bila "Kurangi gerakan" aktif). */
+function gantiLatar(id){
+  if(!dataLatar || !dataLatar.latar[id] || id === latarAktif) return;
+  const nomor = ++nomorLatar;
+  if(gerakDikurangi() || !$("#persiapan").hidden){ pasangLatar(id); return; }
+  $("#tirai").classList.add("tutup");
+  setTimeout(() => {
+    if(nomor !== nomorLatar) return;
+    pasangLatar(id);
+    setTimeout(() => $("#tirai").classList.remove("tutup"), 120);
+  }, 470);
+}
+async function muatLatar(){
+  try{
+    const r = await fetch("/aset/latar/latar.json", {cache: "no-store"});
+    if(!r.ok) return;
+    dataLatar = await r.json();
+    const awal = latarTertunda || dataLatar.bawaan;
+    if(dataLatar.latar[awal]) pasangLatar(awal);
+  }catch(e){ dataLatar = null; /* ruang kelas cadangan tetap tampil */ }
+}
+let latarTertunda = "";   // pesan latar yang datang sebelum latar.json selesai dimuat
+
+/* ---------- tes suara (untuk guru) ----------
+   Membandingkan suara saat adegan 3D berjalan dan saat dijeda. Bila hanya putus-putus saat adegan berjalan,
+   penyebabnya beban grafis; bila tetap putus-putus saat dijeda, penyebabnya suara/jaringan. */
+const KALIMAT_TES = ["Buka keran.", "Basahi tanganmu.", "Ambil sabun.", "Gosok telapak tanganmu."];
+function tesSuara(jeda){
+  const adegan = $("#adegan");
+  let jumlah = 0, terlama = 0, akhir = performance.now(), jalan = true;
+  const ukur = t => { if(!jalan) return; terlama = Math.max(terlama, t - akhir); akhir = t; jumlah++; requestAnimationFrame(ukur); };
+  const mulaiT = performance.now();
+  if(jeda) adegan.pause();
+  $("#hasilTes").textContent = jeda ? "Tes berjalan, adegan dijeda…" : "Tes berjalan…";
+  requestAnimationFrame(ukur);
+  tampilSubtitel("", KALIMAT_TES.join(" "));
+  ucapkan(KALIMAT_TES, () => {
+    jalan = false;
+    if(jeda) adegan.play();
+    tampilSubtitel("", "");
+    const detik = (performance.now() - mulaiT) / 1000;
+    $("#hasilTes").textContent = `Tes ${jeda ? "(adegan dijeda) " : ""}selesai: ${detik.toFixed(1)} dtk, ` +
+      `${Math.round(jumlah / detik)} fps, jeda layar terlama ${Math.round(terlama)} ms` +
+      (!jeda && terlama > 150 ? " — layar sempat tersendat; coba tes dengan adegan dijeda." : ".");
+  });
+}
+$("#tesSuara").addEventListener("click", () => tesSuara(false));
+$("#tesSuaraJeda").addEventListener("click", () => tesSuara(true));
+
+/* Layar berkerapatan tinggi: batasi resolusi gambar 3D agar laptop tidak terlalu berat. */
+function batasiResolusi(){
+  const r = $("#adegan").renderer;
+  if(r) r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+}
+
+muatKartu();
+// Tunggu adegan selesai dimuat agar sistem gltf-model sudah siap.
+if($("#adegan").hasLoaded){ batasiResolusi(); muatAvatar(); muatLatar(); }
+else $("#adegan").addEventListener("loaded", () => { batasiResolusi(); muatAvatar(); muatLatar(); });
+aturKamera();
+$("#tombolPanel").addEventListener("click", () => { $("#panel").hidden = !$("#panel").hidden; });
+document.querySelectorAll("[data-acara]").forEach(b => b.addEventListener("click", () => kirim(JSON.parse(b.dataset.acara))));
+</script>
+</body>
+</html>

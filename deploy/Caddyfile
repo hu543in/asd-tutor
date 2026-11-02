@@ -1,0 +1,25 @@
+# /etc/caddy/Caddyfile — HTTPS otomatis (Let's Encrypt) di depan jembatan (v7.3).
+# - /internal/* hanya untuk server MCP di server ini; tidak boleh dari internet.
+# - Dasbor guru (/guru, /api/*, /ws/guru) dilindungi kata sandi tambahan (basic_auth).
+#   Jalur metaverse (/ws/metaverse) tetap memakai token jembatan.
+# - Access log sengaja tidak diaktifkan: URL WebSocket membawa token.
+# Ganti HASH_KATA_SANDI dengan hasil `caddy hash-password`.
+domain-anda.duckdns.org {
+	encode gzip
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+	@internal path /internal/*
+	respond @internal 404
+
+	@guru path / /guru /guru/* /api/* /ws/guru
+	basic_auth @guru {
+		guru HASH_KATA_SANDI
+	}
+
+	reverse_proxy 127.0.0.1:8765
+}

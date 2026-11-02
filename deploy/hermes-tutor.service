@@ -1,0 +1,19 @@
+# /etc/systemd/system/hermes-tutor.service  (ganti /home/ubuntu/.local/bin/hermes dengan hasil `command -v hermes`)
+[Unit]
+Description=Hermes gateway profil tutor-asd (API server 127.0.0.1:8643)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu
+Environment=HOME=/home/ubuntu
+Environment=PATH=/home/ubuntu/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/ubuntu/.local/bin/hermes -p tutor-asd gateway
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

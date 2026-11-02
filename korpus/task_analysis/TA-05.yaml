@@ -1,0 +1,50 @@
+id: TA-05
+jenis: task_analysis
+versi: 2
+status: valid
+validasi:
+  aiken_v: 0.88
+  aiken_v_aspek:
+    relevansi: 0.92
+    kejelasan_langkah: 0.83
+    kesesuaian_kemampuan: 0.75
+    keamanan: 1.00
+  metode: Aiken's V, n = 3 validator, skala 1-5 (lo = 1, c = 5)
+  validator:
+  - Siti Qomariah, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 24 Oktober 2026)
+  - Natalia Damayanti, S.Psi., M.Psi. (Psikolog, Universitas Dinamika Bangsa; lembar 27 Oktober 2026)
+  - Yulinda, S.Pd.Gr (Guru SLB, SLB Negeri 2 Kota Jambi; lembar 31 Oktober 2026)
+  tanggal: '2026-10-31'
+  dokumen: Lembar Penilaian Validasi Ahli TA versi 2; rekap Rekap_Aiken_V_Validasi_TA_v2_terisi.xlsx
+  keputusan: Layak digunakan (Siti dan Natalia - dengan revisi sesuai catatan; Yulinda - tanpa revisi). Lembar asli dikonfirmasi diterima promotor 31 Oktober 2026.
+judul: Menyapa guru
+domain: komunikasi
+level: dasar
+setting: pintu kelas
+prasyarat: mengucapkan kalimat dua kata
+langkah:
+- nomor: 1
+  tindakan: Menghadap ke guru
+  ujaran: Hadap ke [sebutan guru].
+  kartu: Anak menghadap guru
+- nomor: 2
+  tindakan: Melambaikan tangan
+  ujaran: Lambaikan tanganmu.
+  kartu: Tangan melambai
+- nomor: 3
+  tindakan: Mengucapkan salam
+  ujaran: Ucapkan, 'Selamat pagi, [sapaan singkat].'
+  kartu: Balon kata 'Selamat pagi'
+  respons_diterima:
+  - ucapan
+  - lambaian
+  - kartu salam
+- nomor: 4
+  tindakan: Menunggu guru menjawab
+  ujaran: Tunggu [sebutan guru] menjawab.
+  kartu: Guru tersenyum
+catatan: Kontak mata tidak dijadikan syarat; menghadap ke arah guru sudah cukup. Ucapan, lambaian, atau
+  kartu salam diterima sebagai respons benar.
+rujukan:
+- Wardany & Apriyanti (2022), Buku Panduan Guru Pendidikan Khusus bagi Peserta Didik Autis Disertai Hambatan
+  Intelektual, Kemendikbudristek, Tabel 2.6 hlm. 33; Tabel 2.7 hlm. 35

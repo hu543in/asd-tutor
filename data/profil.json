@@ -1,0 +1,33 @@
+{
+  "A01": {
+    "_catatan": "DATA CONTOH untuk uji di profil pengembang. Bukan anak nyata. Ganti dengan data asesmen yang sudah dipseudonimkan.",
+    "uji": true,
+    "level": "dasar",
+    "domain_prioritas": [
+      "kemandirian",
+      "komunikasi"
+    ],
+    "cara_komunikasi": [
+      "ucapan pendek",
+      "kartu gambar"
+    ],
+    "penguatan": [
+      "pujian verbal spesifik",
+      "aktivitas favorit singkat"
+    ],
+    "jeda_detik": 8,
+    "isian": {
+      "sebutan guru": "Bu Guru",
+      "sapaan singkat": "Bu",
+      "pengering kelas": "handuk",
+      "benda kesukaan": "bola karet",
+      "benda hitung": "balok"
+    },
+    "ta_aktif": [
+      "TA-01",
+      "TA-02",
+      "TA-06",
+      "TA-09"
+    ]
+  }
+}
