@@ -111,6 +111,8 @@ def periksa_entri(d: dict) -> tuple[list[str], list[str]]:
             if uid in dilihat:
                 galat.append(f"{uid}: ID ganda")
             dilihat.add(uid)
+            if u.get("status", "valid") not in ("valid", "ditolak"):
+                galat.append(f"{uid}: status ujaran '{u.get('status')}' tidak dikenal (valid/ditolak)")
             if not uj:
                 galat.append(f"{uid}: ujaran kosong")
                 continue

@@ -196,9 +196,9 @@ Folder `tutor_profile/` berisi persona, skrip penguncian, dan skenario uji untuk
 ## Struktur
 
 ```
-korpus/task_analysis/TA-01..TA-10.yaml   task analysis versi 2 (status: draft)
-korpus/strategi/STR-*.yaml               strategi (draft, contoh awal)
-korpus/bank_ujaran/BANK-01.yaml          58 kalimat bank ujaran (draft, menunggu validasi)
+korpus/task_analysis/TA-01..TA-10.yaml   task analysis versi 2 (status: valid)
+korpus/strategi/STR-*.yaml               8 strategi (status: valid)
+korpus/bank_ujaran/BANK-01.yaml          58 kalimat bank ujaran (valid; UJ-TRA-01 ditolak)
 penjaga.py                               penjaga keluaran tutor
 jembatan.py, hermes_klien.py, static/    jembatan metaverse dan dasbor guru
 data/jembatan.jsonl                      dibuat otomatis: log setiap giliran jembatan
@@ -210,9 +210,13 @@ data/eskalasi.jsonl                      dibuat otomatis: catatan panggil guru
 
 ## Setelah validasi selesai
 
-Status per 31 Oktober 2026: TA-01 sampai TA-10 sudah `valid` (Aiken's V, 3 validator, rerata 0,90).
-BANK-01 dan strategi masih `draft`. Di mode prod, tutor hanya boleh mengucapkan ujaran langkah TA
-dan tiga pujian sementara di SOUL.md. Catatan revisi ada di `korpus/CATATAN_REVISI_TA_v3.md`.
+Status per 6 November 2026:
+- TA-01 sampai TA-10 `valid` (Aiken's V, 3 validator, rerata 0,90; 31 Oktober 2026).
+- 8 strategi dan BANK-01 `valid` (Aiken's V, 3 validator, rerata 0,96 dan 0,97; 6 November 2026).
+- UJ-TRA-01 "Sebentar lagi selesai." berstatus `ditolak` (rerata V 0,79) dan tidak dimuat penjaga.
+  Kalimat lain dengan `status` per ujaran selain `valid`/`ditolak` ditolak oleh `validate_korpus.py`.
+- Daftar Pujian di SOUL.md sudah diganti dengan kategori Pujian BANK-01.
+Catatan revisi TA ada di `korpus/CATATAN_REVISI_TA_v3.md`.
 
 1. Isi `validasi` (validator, aiken_v, tanggal) di tiap YAML yang lolos, ubah `status: valid`.
    Bank ujaran juga: setelah BANK-01 valid, perbarui daftar Pujian di SOUL.md.

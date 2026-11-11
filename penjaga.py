@@ -108,7 +108,8 @@ class Penjaga:
         self.ta = [d for d in semua_entri("task_analysis", termasuk_draft=draft) if not periksa_entri(d)[0]]
         bank_draft = draft and self.bank_mode == "draft"
         self.bank = [u for b in semua_entri("bank_ujaran", termasuk_draft=bank_draft)
-                     if not periksa_entri(b)[0] for u in b.get("ujaran", [])]
+                     if not periksa_entri(b)[0] for u in b.get("ujaran", [])
+                     if u.get("status", "valid") != "ditolak"]  # kalimat yang gagal validasi tidak dimuat
         self.profil = _semua_profil()
         self._cache: dict[str, dict] = {}
 

@@ -17,7 +17,7 @@ detailed guide (`PANDUAN.md`) are in Indonesian.
 | Part | Files | Role |
 |---|---|---|
 | MCP server | `server.py`, `korpus_lib.py`, `ingest.py` | Five tools for the Hermes Agent tutor profile: `ambil_task_analysis` (verbatim by ID), `cari_strategi` (hybrid retrieval), `profil_anak`, `catat_langkah` (step scores for single-case research), `panggil_guru` |
-| Corpus | `korpus/` | Ten task analyses (Indonesian), a 58-sentence speech bank, two strategies; YAML with validation status |
+| Corpus | `korpus/` | Ten task analyses (Indonesian), eight teacher strategies and a 58-sentence speech bank, all expert-validated (Aiken's V); YAML with validation records |
 | Output guard | `penjaga.py` | Deterministic whitelist check of every tutor reply against the corpus after profile placeholders are filled |
 | Bridge | `jembatan.py`, `hermes_klien.py`, `PROTOKOL_JEMBATAN.md` | WebSocket bridge between the teacher dashboard, the metaverse client and the Hermes API server |
 | Teacher dashboard | `static/guru.html` | Start/stop sessions, approve steps, choose the room, see blocked replies and escalations |
